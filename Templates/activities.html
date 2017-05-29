@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
+    <title>Tus planes</title>
+</head>
+<body>
+    <h1>Actividades</h1>
+    <br>
+    <table cellpadding="5px">
+        <tr>
+            <th><b>NOMBRE</b></th>
+        </tr>
+    <p>{{ actividades.length }}</p>
+        {% for item in actividades %}
+            <tr>
+                {{item}}
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="./cerca">Volver</a>
+</body>
+</html>

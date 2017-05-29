@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns="http://www.owl-ontologies.com/Ontology_ECSDI_plan_de_viaje.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.owl-ontologies.com/Ontology_ECSDI_plan_de_viaje.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="transporte">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="servicio"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="plan_de_un_dia">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="plan"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="estacion">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="lugar"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="alojamiento">
+    <rdfs:subClassOf rdf:resource="#servicio"/>
+  </owl:Class>
+  <owl:Class rdf:ID="valoracion"/>
+  <owl:Class rdf:ID="metro">
+    <rdfs:subClassOf rdf:resource="#transporte"/>
+  </owl:Class>
+  <owl:Class rdf:ID="festiva">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="actividad"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="pais">
+    <rdfs:subClassOf rdf:resource="#lugar"/>
+  </owl:Class>
+  <owl:Class rdf:ID="usuario"/>
+  <owl:Class rdf:ID="ciudad">
+    <rdfs:subClassOf rdf:resource="#lugar"/>
+  </owl:Class>
+  <owl:Class rdf:ID="cultural">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#actividad"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="taxi">
+    <rdfs:subClassOf rdf:resource="#transporte"/>
+  </owl:Class>
+  <owl:Class rdf:ID="periodo"/>
+  <owl:Class rdf:ID="aeropuerto">
+    <rdfs:subClassOf rdf:resource="#lugar"/>
+  </owl:Class>
+  <owl:Class rdf:ID="tren">
+    <rdfs:subClassOf rdf:resource="#transporte"/>
+  </owl:Class>
+  <owl:Class rdf:ID="reserva">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="se_hace_sobre"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="plan_de_viaje">
+    <rdfs:subClassOf rdf:resource="#plan"/>
+  </owl:Class>
+  <owl:Class rdf:ID="bus">
+    <rdfs:subClassOf rdf:resource="#transporte"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ludica">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#actividad"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#actividad">
+    <rdfs:subClassOf rdf:resource="#servicio"/>
+  </owl:Class>
+  <owl:Class rdf:ID="localizacion">
+    <rdfs:subClassOf rdf:resource="#lugar"/>
+  </owl:Class>
+  <owl:Class rdf:ID="compania"/>
+  <owl:Class rdf:ID="vuelo">
+    <rdfs:subClassOf rdf:resource="#transporte"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="ofrece">
+    <rdfs:domain rdf:resource="#compania"/>
+    <rdfs:range rdf:resource="#servicio"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="sale_de">
+    <rdfs:range rdf:resource="#lugar"/>
+    <rdfs:domain rdf:resource="#transporte"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="se_compone_de">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#plan_de_un_dia"/>
+          <owl:Class rdf:about="#plan_de_viaje"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#reserva"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="es_objeto_de">
+    <rdfs:range rdf:resource="#valoracion"/>
+    <rdfs:domain rdf:resource="#servicio"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="tiene">
+    <rdfs:range rdf:resource="#plan_de_un_dia"/>
+    <rdfs:domain rdf:resource="#plan_de_viaje"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="pertenece_a">
+    <rdfs:range rdf:resource="#ciudad"/>
+    <rdfs:domain rdf:resource="#localizacion"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="es_ofrecido_por">
+    <rdfs:range rdf:resource="#compania"/>
+    <rdfs:domain rdf:resource="#servicio"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="llega_a">
+    <rdfs:domain rdf:resource="#transporte"/>
+    <rdfs:range rdf:resource="#lugar"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="tiene_como_horario">
+    <rdfs:range rdf:resource="#periodo"/>
+    <rdfs:domain rdf:resource="#servicio"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="esta_en">
+    <rdfs:range rdf:resource="#pais"/>
+    <rdfs:domain rdf:resource="#ciudad"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="es_hecha_por">
+    <rdfs:range rdf:resource="#usuario"/>
+    <rdfs:domain rdf:resource="#valoracion"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="se_encuentra_en">
+    <rdfs:range rdf:resource="#localizacion"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#aeropuerto"/>
+          <owl:Class rdf:about="#actividad"/>
+          <owl:Class rdf:about="#estacion"/>
+          <owl:Class rdf:about="#alojamiento"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#se_hace_sobre">
+    <rdfs:range rdf:resource="#servicio"/>
+    <rdfs:domain rdf:resource="#reserva"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="es_dirigida_a">
+    <rdfs:domain rdf:resource="#valoracion"/>
+    <rdfs:range rdf:resource="#servicio"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ha_contratado">
+    <rdfs:range rdf:resource="#plan_de_viaje"/>
+    <rdfs:domain rdf:resource="#usuario"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="id_de_vuelo">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#vuelo"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="dia_de_la_semana">
+    <rdfs:domain rdf:resource="#periodo"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="id_de_bus">
+    <rdfs:domain rdf:resource="#bus"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#"/>
+  <owl:DatatypeProperty rdf:ID="linea_de_metro">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#metro"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="linea_de_tren">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#tren"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="coste">
+    <rdfs:domain rdf:resource="#servicio"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="fin">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#periodo"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="llegada">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#transporte"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="inicio">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#periodo"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="puntuacion">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#valoracion"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hora_de_inicio">
+    <rdfs:domain rdf:resource="#reserva"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="direccion">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#localizacion"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hora_de_fin">
+    <rdfs:domain rdf:resource="#reserva"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="salida">
+    <rdfs:domain rdf:resource="#transporte"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="nombre">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#usuario"/>
+          <owl:Class rdf:about="#ciudad"/>
+          <owl:Class rdf:about="#pais"/>
+          <owl:Class rdf:about="#estacion"/>
+          <owl:Class rdf:about="#compania"/>
+          <owl:Class rdf:about="#aeropuerto"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="id_de_taxi">
+    <rdfs:domain rdf:resource="#taxi"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="data">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+    <rdfs:domain rdf:resource="#plan_de_un_dia"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="DatatypeProperty_82"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.5, Build 663)  http://protege.stanford.edu -->
