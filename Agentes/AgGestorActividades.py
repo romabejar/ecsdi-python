@@ -215,6 +215,8 @@ def communication():
                         gr.add((act_obj, ECSDI.es_ofrecido_por, URIRef(compania)))
                         gr.add((content, ECSDI.se_construye_de_actividades, URIRef(act_obj)))
 
+                gr.serialize(destination='../data/compres', format='turtle')
+
                 gr = build_message(gr,
                                    ACL['inform-'],
                                    sender=AgGestorActividades.uri,

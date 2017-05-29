@@ -20,6 +20,7 @@ from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
 from AgentUtil.Agent import Agent
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Logging import config_logger
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 __author__ = 'bejar'
@@ -135,6 +136,7 @@ def browser_cerca():
         # imprimimos el grafo
         logger.info(gr)
 
+    print ECSDI.coste
     planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
     gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
                           content=contentResult), planificador.address)
@@ -144,14 +146,17 @@ def browser_cerca():
     logger.info("Grafo respuesta")
     logger.info(gresp)
     print gresp
-    activitats_matrix = []
+    actividades = []
+    subject_pos = {}
+    index=0
 
-    for item in gresp.subjects(RDF.type, ECSDI.actividad):
-        logger.info(1)
-        activitats = [gresp.value(subject=item, predicate=ECSDI.tipo_de_actividad)]
-        activitats_matrix.append(activitats)
+    for s, p, o in gresp:
+        print p
+        if p == ECSDI.coste:
+           print True
+           actividades.append(o)
 
-    return render_template('activities.html', actividades= activitats_matrix)
+    return render_template('activities.html', actividades=actividades)
 
 
 @app.route("/Stop")
