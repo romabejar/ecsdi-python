@@ -147,15 +147,28 @@ def communication():
             if accion == ECSDI.peticion_de_plan:
                 ciudad = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
                 miciudad = gm.value(subject=ciudad, predicate=ECSDI.nombre)
+                # TODO: Recoger todos los parametros necesarios
+                # Fechas entrada, salida, ciudad origen, alguna restriccion de concreta
 
-                # Anadir mas parametros
-                restriccions_ciudad = {}
-                restriccions_ciudad['ciudadNombre']=miciudad
-                gr = buscar_actividades(**restriccions_ciudad)
+                # Creacion de los parametros
+                restriccions_actividades = {}
+                restriccions_actividades['ciudadNombre']=miciudad
+                restriccions_vuelos = {}
+                restriccions_alojamientos = {}
 
-                logger.info(miciudad)
+                gr_actividades = buscar_actividades(**restriccions_actividades)
+                gr = gr_actividades #Esto es temporal, para que se devuelva el grafo de actividades y poder ver algo
+                logger.info("Grafo respuesta de actividades recibido")
 
+                # TODO: Llamar al agente de vuelos con el grafo correspondiente
+                # gr_vuelos = buscar_vuelos(**restriccions_vuelos)
+                logger.info("Grafo respuesta de vuelos recibido")
 
+                # TODO: Llamar al agente de alojamiento con el grafo correspondiente
+                # gr_alojamiento= buscar_alojamiento(**restriccions_alojamientos)
+                logger.info("Grafo respuesta de alojamiento recibido")
+
+                # TODO: Crear la funcion de criba y pasarle los datos
             else:
                 gr = build_message(Graph(),
                                ACL['not-understood'],
@@ -191,8 +204,37 @@ def buscar_actividades(ciudadNombre='Barcelona'):
                                   msgcnt=get_count(),
                                   content=content), agente_actividades.address)
 
-    logger.info("Recibo respuesta de actividades")
     return gr
+
+def buscar_vuelos(ciudadNombre='Barcelona'):
+
+    # Creamos el contenido
+
+    # Creamos los objetos necesarios para las tripletas del grafo
+
+    #Creamos el grafo con las tripletas
+
+    #Preguntamos por el agente que necesitamos
+
+    #Enviamos el mensaje
+
+    #Retornamos el grafo respuesta del mensaje
+    return 0
+
+
+def buscar_alojamiento(ciudadNombre='Barcelona'):
+    #creamos el contenido
+
+    #creamos los objetos necesarios para las tripletas del grafo
+
+    #Creamos el grafo con las tripletas
+
+    #Preguntamos por el agente que necesitamos
+
+    #Enviamos el mensaje
+
+    #Retornamos el grafo respuesta del mensaje
+    return 0
 
 @app.route("/Stop")
 def stop():
