@@ -152,7 +152,7 @@ def communication():
                 ciudad = gm.value(subject=localizacion, predicate=ECSDI.pertenece_a)
                 miciudad = gm.value(subject=ciudad, predicate=ECSDI.nombre)
 
-                logger.info('Lo he hecho bien')
+                # logger.info('Lo he hecho bien')
                 logger.info(miciudad)
                 estaEnCache = False
                 # Cache

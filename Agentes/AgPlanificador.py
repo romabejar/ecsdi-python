@@ -145,23 +145,45 @@ def communication():
             accion = gm.value(subject=content, predicate=RDF.type)
 
             if accion == ECSDI.peticion_de_plan:
-                ciudad = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
-                miciudad = gm.value(subject=ciudad, predicate=ECSDI.nombre)
+                # ciudad -> ciudOrg
+                # ciudadOrigen -> ciudadOrigen
+                
+                ciudOrg = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
+                ciudadOrigen = gm.value(subject=ciudOrg, predicate=ECSDI.nombre)
+
+                ciudDes = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
+                ciudadDestino = gm.value(subject=ciudDes, predicate=ECSDI.nombre)
+
+                inicioData = gm.value(subject=content,predicate=ECSDI.data_de_ida)
+                finData = gm.value(subject=content,predicate=ECSDI.data_de_vuelta)
+                ponderacionLudica = gm.value(subject=content,predicate=ECSDI.ponderacion_de_actividades_ludicas)
+                ponderacionCulturales = gm.value(subject=content, predicate=ECSDI.ponderacion_de_actividades_culturales)
+                ponderacionFestivas = gm.value(subject=content, predicate=ECSDI.ponderacion_de_actividades_festivas)
+
+
                 # TODO: Recoger todos los parametros necesarios
                 # Fechas entrada, salida, ciudad origen, alguna restriccion de concreta
 
                 # Creacion de los parametros
                 restriccions_actividades = {}
-                restriccions_actividades['ciudadNombre']=miciudad
+                #restriccions_actividades['ciudadOrigenNombre']=ciudadOrigen
+                restriccions_actividades['ciudadDestinoNombre']=ciudadDestino
+                restriccions_actividades['inicioData']=inicioData
+                restriccions_actividades['finData']=finData
+                restriccions_actividades['ponderacionLudica']=ponderacionLudica
+                restriccions_actividades['ponderacionCulturales']=ponderacionCulturales
+                restriccions_actividades['ponderacionFestivas']=ponderacionFestivas
                 restriccions_vuelos = {}
                 restriccions_alojamientos = {}
 
                 gr_actividades = buscar_actividades(**restriccions_actividades)
+                # Llamada a la funcion que busca las actividades entre las fechas establecidas
+
                 gr = gr_actividades #Esto es temporal, para que se devuelva el grafo de actividades y poder ver algo
                 logger.info("Grafo respuesta de actividades recibido")
 
                 # TODO: Llamar al agente de vuelos con el grafo correspondiente
-                # gr_vuelos = buscar_vuelos(**restriccions_vuelos)
+                # gr_vuelos = buscar_transporte(**restriccions_vuelos)
                 logger.info("Grafo respuesta de vuelos recibido")
 
                 # TODO: Llamar al agente de alojamiento con el grafo correspondiente
@@ -185,7 +207,7 @@ def communication():
 
 
 
-def buscar_actividades(ciudadNombre='Barcelona'):
+def buscar_actividades():
     content = ECSDI['peticion_de_actividades' + str(get_count())]
 
     ciudad = ECSDI['ciudad' + str(get_count())]
@@ -193,7 +215,7 @@ def buscar_actividades(ciudadNombre='Barcelona'):
 
     grafo = Graph()
 
-    grafo.add((ciudad, ECSDI.nombre, Literal(ciudadNombre)))
+    grafo.add((ciudad, ECSDI.nombre, Literal(ciudad)))
     grafo.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad)))
     grafo.add((content, RDF.type, ECSDI.peticion_de_actividades))
     grafo.add((content,ECSDI.tiene_como_restriccion_de_localizacion, URIRef(localizacion)))
@@ -204,9 +226,11 @@ def buscar_actividades(ciudadNombre='Barcelona'):
                                   msgcnt=get_count(),
                                   content=content), agente_actividades.address)
 
+
+
     return gr
 
-def buscar_vuelos(ciudadNombre='Barcelona'):
+def buscar_transporte(ciudadNombre='Barcelona'):
 
     # Creamos el contenido
 

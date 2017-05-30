@@ -124,15 +124,54 @@ def browser_cerca():
     destinationCity = request.form.get('destinationCity')
     initDate = request.form.get('initDate')
     finDate = request.form.get('finDate')
+    pLudica = request.form.get('ponderacionLudica')
+    pCultural = request.form.get('ponderacionCultural')
+    pFestiva = request.form.get('ponderacionFestiva')
 
     if originCity:
-        city = ECSDI['ciudad' + str(get_count())]
-        gr.add((city, RDF.type, ECSDI.ciudad))
-        gr.add((city, ECSDI.nombre, Literal(originCity, datatype=XSD.string)))
+        cityOrg = ECSDI['ciudad' + str(get_count())]
+        gr.add((cityOrg, RDF.type, ECSDI.ciudad))
+        gr.add((cityOrg, ECSDI.nombre, Literal(originCity, datatype=XSD.string)))
         # Add restriccio to content
-        gr.add((contentResult, ECSDI.tiene_como_destino, URIRef(city)))
+        gr.add((contentResult, ECSDI.tiene_como_origen, URIRef(cityOrg)))
 
     # TODO: Ralizar para todos los parametros
+    if destinationCity:
+        cityDes = ECSDI['ciudad' + str(get_count())]
+        gr.add((cityDes, RDF.type, ECSDI.ciudad))
+        gr.add((cityDes, ECSDI.nombre, Literal(destinationCity, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.tiene_como_destino, URIRef(cityDes)))
+
+    if initDate:
+        initD = ECSDI['inicioIda' + str(get_count())]
+        gr.add((initD, ECSDI.data_de_ida, Literal(initDate, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.data_de_ida, URIRef(initD)))
+
+    if finDate:
+        finD = ECSDI['finVuelta' + str(get_count())]
+        gr.add((finD, ECSDI.data_de_vuelta, Literal(finD, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.data_de_vuelta, URIRef(finD)))
+
+    if pLudica:
+        ponL = ECSDI['ponL'+ str(get_count())]
+        gr.add((ponL, ECSDI.ponderacion_de_actividades_ludicas, Literal(ponL, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_ludicas, URIRef(finD)))
+
+    if pCultural:
+        ponC = ECSDI['ponC' + str(get_count())]
+        gr.add((ponC, ECSDI.ponderacion_de_actividades_culturales, Literal(ponC, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_culturales, URIRef(finD)))
+
+    if pFestiva:
+        ponF = ECSDI['ponF' + str(get_count())]
+        gr.add((ponF, ECSDI.ponderacion_de_actividades_festivas, Literal(ponF, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_festivas, URIRef(finD)))
 
     planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
     gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
