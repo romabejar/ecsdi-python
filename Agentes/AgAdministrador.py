@@ -125,7 +125,6 @@ def browser_cerca():
     initDate = request.form.get('initDate')
     finDate = request.form.get('finDate')
 
-    logger.info(originCity)
     if originCity:
         city = ECSDI['ciudad' + str(get_count())]
         gr.add((city, RDF.type, ECSDI.ciudad))
@@ -133,23 +132,14 @@ def browser_cerca():
         # Add restriccio to content
         gr.add((contentResult, ECSDI.tiene_como_destino, URIRef(city)))
 
-        # imprimimos el grafo
-        logger.info(gr)
+    # TODO: Ralizar para todos los parametros
 
-    print ECSDI.coste
     planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
     gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
                           content=contentResult), planificador.address)
 
 
-
-    logger.info("Grafo respuesta")
-    logger.info(gresp)
-    print gresp
     actividades = []
-    subject_pos = {}
-    index=0
-
     for s, p, o in gresp:
         print p
         if p == ECSDI.coste:
