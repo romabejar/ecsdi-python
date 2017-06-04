@@ -187,7 +187,7 @@ def communication():
                 logger.info("Grafo respuesta de vuelos recibido")
 
                 # TODO: Llamar al agente de alojamiento con el grafo correspondiente
-                # gr_alojamiento= buscar_alojamiento(**restriccions_alojamientos)
+                gr_alojamiento= buscar_alojamiento(**restriccions_alojamientos)
                 logger.info("Grafo respuesta de alojamiento recibido")
 
                 # TODO: Crear la funcion de criba y pasarle los datos
@@ -233,17 +233,32 @@ def buscar_actividades():
 def buscar_transporte(ciudadNombre='Barcelona'):
 
     # Creamos el contenido
+    content = ECSDI['peticion_de_alojamiento' + str(get_count())]
 
     # Creamos los objetos necesarios para las tripletas del grafo
+    ciudad = ECSDI['ciudad' + str(get_count())]
+    localizacion = ECSDI['localizacion' + str(get_count())]
 
     #Creamos el grafo con las tripletas
+    grafo = Graph()
+    grafo.add((ciudad, RDF.Type, ECSDI.ciudad))
+    grafo.add((localizacion, RDF.Type, ECSDI.localizacion))
+    grafo.add((ciudad, ECSDI.nombre, Literal(ciudadNombre)))
+    grafo.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad)))
+    grafo.add((content, RDF.type, ECSDI.peticion_de_alojamiento))
+    grafo.add((content, ECSDI.tiene_como_restriccion_de_localizacion, URIRef(localizacion)))
 
     #Preguntamos por el agente que necesitamos
+    agente_alojamiento = get_agent_info(agn.AgGestorAlojamiento, DirectoryAgent, PlannerAgent, get_count())
 
     #Enviamos el mensaje
+    gr = send_message(build_message(grafo, perf=ACL.request, sender=PlannerAgent.uri, receiver=agente_alojamiento.uri,
+                                    msgcnt=get_count(),
+                                    content=content), agente_alojamiento.address)
 
     #Retornamos el grafo respuesta del mensaje
-    return 0
+
+    return gr
 
 
 def buscar_alojamiento(ciudadNombre='Barcelona'):
