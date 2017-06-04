@@ -175,8 +175,9 @@ def communication():
                 restriccions_actividades['ponderacionFestivas']=ponderacionFestivas
                 restriccions_vuelos = {}
                 restriccions_alojamientos = {}
+                restriccions_alojamientos['ciudadNombre']=ciudadDestino
 
-                gr_actividades = buscar_actividades(**restriccions_actividades)
+                gr_actividades = buscar_actividades()
                 # Llamada a la funcion que busca las actividades entre las fechas establecidas
 
                 gr = gr_actividades #Esto es temporal, para que se devuelva el grafo de actividades y poder ver algo
@@ -231,7 +232,21 @@ def buscar_actividades():
     return gr
 
 def buscar_transporte(ciudadNombre='Barcelona'):
+    #creamos el contenido
 
+    #creamos los objetos necesarios para las tripletas del grafo
+
+    #Creamos el grafo con las tripletas
+
+    #Preguntamos por el agente que necesitamos
+
+    #Enviamos el mensaje
+
+    #Retornamos el grafo respuesta del mensaje
+    return 0
+
+
+def buscar_alojamiento(ciudadNombre='Barcelona'):
     # Creamos el contenido
     content = ECSDI['peticion_de_alojamiento' + str(get_count())]
 
@@ -241,8 +256,8 @@ def buscar_transporte(ciudadNombre='Barcelona'):
 
     #Creamos el grafo con las tripletas
     grafo = Graph()
-    grafo.add((ciudad, RDF.Type, ECSDI.ciudad))
-    grafo.add((localizacion, RDF.Type, ECSDI.localizacion))
+    grafo.add((ciudad, RDF.type, ECSDI.ciudad))
+    grafo.add((localizacion, RDF.type, ECSDI.localizacion))
     grafo.add((ciudad, ECSDI.nombre, Literal(ciudadNombre)))
     grafo.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad)))
     grafo.add((content, RDF.type, ECSDI.peticion_de_alojamiento))
@@ -260,20 +275,6 @@ def buscar_transporte(ciudadNombre='Barcelona'):
 
     return gr
 
-
-def buscar_alojamiento(ciudadNombre='Barcelona'):
-    #creamos el contenido
-
-    #creamos los objetos necesarios para las tripletas del grafo
-
-    #Creamos el grafo con las tripletas
-
-    #Preguntamos por el agente que necesitamos
-
-    #Enviamos el mensaje
-
-    #Retornamos el grafo respuesta del mensaje
-    return 0
 
 @app.route("/Stop")
 def stop():

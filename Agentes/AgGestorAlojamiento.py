@@ -11,6 +11,7 @@ import random
 
 import json
 import pprint
+import os.path
 import argparse
 from multiprocessing import Queue, Process
 import sys
@@ -72,7 +73,7 @@ else:
     # Data Agent
     # Datos del Agente
     AgGestorAlojamiento = Agent('AgGestorAlojamiento',
-                        agn.AgGestorActividades,
+                        agn.AgGestorAlojamiento,
                         'http://%s:%d/comm' % (hostname, port),
                         'http://%s:%d/Stop' % (hostname, port))
 
@@ -128,7 +129,7 @@ def communication():
 
     msgdic = get_message_properties(gm)
 
-    gr = None
+    gr = Graph
 
     if msgdic is None:
         # Si no es, respondemos que no hemos entendido el mensaje
@@ -168,13 +169,20 @@ def communication():
                 nombreCiudad = gm.value(subject=ciudad, predicate=ECSDI.nombre)
 
                 estaEnCache = False
+                if os.path.exists('../data/alojamientos-'+str(nombreCiudad)):
+                    estaEnCache = True
+
                 # Cache
                 if estaEnCache:
-                    return True
+                    logger.info("Estaba en cache")
+                    cacheGraph = open('../data/alojamientos-'+str(nombreCiudad))
+                    gr = Graph()
+                    gr.parse(cacheGraph, format='turtle')
+
                 else:
                     # Anadir mas parametros
                     restriccions_alojamiento = {}
-                    restriccions_alojamiento['ciudadNombre='] = nombreCiudad
+                    restriccions_alojamiento['ciudadNombre'] = nombreCiudad
 
 
                     logger.info("Mensaje peticion de alojamiento")
@@ -182,9 +190,7 @@ def communication():
                     gr = buscar_alojamientos_externamente(**restriccions_alojamiento)
 
 
-
-
-                gr.serialize(destination='../data/alojamientos-'+ str(nombreCiudad), format='turtle')
+                gr.serialize(destination='../data/alojamientos-'+str(nombreCiudad), format='turtle')
 
                 gr = build_message(gr,
                                    ACL['inform-'],
@@ -236,15 +242,10 @@ def agent_behaviour(queue):
 
 
 
-def buscar_alojamientos_externamente(ciudad,entrada,salida):
+def buscar_alojamientos_externamente(ciudadNombre):
 
     # Creamos un array con cuatro alojamientos vacios
-    alojamiento_array = []
-    alojamiento_array['0'] = 1
-    alojamiento_array['1'] = 1
-    alojamiento_array['2'] = 1
-    alojamiento_array['3'] = 1
-    alojamiento_array['4'] = 1
+    alojamiento_array = [1, 2, 3, 4, 5]
 
     # Alojamiento
     # se_encuentra_en (localizacion)
@@ -262,11 +263,11 @@ def buscar_alojamientos_externamente(ciudad,entrada,salida):
     # fin    (datetime)
 
     # Esto seran las arrays con los valores aleatorios que se asignaran a las tripletas(basados en los atributos de un alojamiento de la ontologia)
-    array_nombres_Compañias = ["NH Hoteles","Hotel Maria","Hotel Carlos III","Hostal Pedro", "Hotel Buenavista"]
-    array_precios = {"87", "65", "72", "77", "102"}
-    array_dias_semana = {"Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"}
-    array_datetimes = {"07/06/2017","11/06/2017"}
-    array_direcciones = {"Diagonal 54","Aragon 23","Plaza España","Pablo Neruda 12","Avenida del Canal 3"}
+    array_nombres_Companias = ["NH Hoteles","Hotel Maria","Hotel Carlos III","Hostal Pedro", "Hotel Buenavista"]
+    array_precios = ["87", "65", "72", "77", "102"]
+    array_dias_semana = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"]
+    array_datetimes = ["07/06/2017","11/06/2017"]
+    array_direcciones = ["Diagonal 54", "Aragon 23", "Plaza España", "Pablo Neruda 12", "Avenida del Canal 3"]
 
     index = 0
     gr = Graph()
@@ -275,22 +276,22 @@ def buscar_alojamientos_externamente(ciudad,entrada,salida):
     # Respuesta de alojamietno
     # se_constituye_de_alojamientos (alojamientos)
     content = ECSDI['respuesta_de_alojamiento' + str(get_count())]
-    gr.add(content, RDF.type, ECSDI.respuesta_de_alojamiento)
+    gr.add((content, RDF.type, ECSDI.respuesta_de_alojamiento))
 
     for alojamiento in alojamiento_array:
-        index += 1
         # TODO: Mirar ontologia que se necesita para representar un alojamiento
         # TODO: Aqui crear los objetos necesarios
         alojamiento = ECSDI['alojamiento' + str(get_count())]
         compania = ECSDI['compania' + str(get_count())]
         periodo = ECSDI['periodo' + str(get_count())]
-        localizacion = ECSDI['localizacion'+str(get_count)]
-        ciudad_obj = ECSDI['ciudad'+str(get_count)]
+        localizacion = ECSDI['localizacion'+str(get_count())]
+        ciudad_obj = ECSDI['ciudad'+str(get_count())]
 
         # TODO: Por cada sub-objeto de actividad crear sus tripletas que lo representan
         # Compania
+        print index
         gr.add((compania, RDF.type, ECSDI.compania))
-        gr.add((compania, ECSDI.nombre, Literal(array_nombres_Compañias[index])))
+        gr.add((compania, ECSDI.nombre, Literal(array_nombres_Companias[index])))
 
         # Periodo
         gr.add((periodo, RDF.type, ECSDI.periodo))
@@ -300,23 +301,23 @@ def buscar_alojamientos_externamente(ciudad,entrada,salida):
 
         #Ciudad
         gr.add((ciudad_obj, RDF.type, ECSDI.ciudad))
-        gr.add((ciudad_obj, ECSDI.nombre, Literal(ciudad)))
+        gr.add((ciudad_obj, ECSDI.nombre, Literal(ciudadNombre)))
 
         # Localizacion
         gr.add((localizacion, RDF.type, ECSDI.localizacion))
-        gr.add((localizacion. ECSDI.direccion, Literal(array_direcciones[index])))
-        gr.add((localizacion.ECSDI.pertenece_a, URIRef(ciudad_obj)))
+        gr.add((localizacion, ECSDI.direccion, Literal(array_direcciones[index])))
+        gr.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad_obj)))
 
 
         # TODO: Crear las tripletas propias del alojamiento y linkar los objetos creados anteriormente
         # Actividad
         gr.add((alojamiento, RDF.type, ECSDI.alojamiento))
-        gr.add((alojamiento_array, ECSDI.se_encuentra_en, URIRef(localizacion)))
+        gr.add((alojamiento, ECSDI.se_encuentra_en, URIRef(localizacion)))
         gr.add((alojamiento, ECSDI.coste, Literal(array_precios[index])))
-        gr.add((alojamiento_array, ECSDI.es_ofrecido_por, URIRef(compania)))
-        gr.add((alojamiento_array, ECSDI.tiene_como_horario, URIRef(periodo)))
+        gr.add((alojamiento, ECSDI.es_ofrecido_por, URIRef(compania)))
+        gr.add((alojamiento, ECSDI.tiene_como_horario, URIRef(periodo)))
         gr.add((content, ECSDI.se_construye_de_alojamientos, URIRef(alojamiento)))
-
+        index += 1
     #Devolvemos el grafo
     return gr
 

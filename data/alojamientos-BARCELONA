@@ -1,0 +1,118 @@
+@prefix ns1: <http://www.owl-ontologies.com/ECSDI_Ontology_plan_de_viaje.owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ns1:respuesta_de_alojamiento1 a ns1:respuesta_de_alojamiento ;
+    ns1:se_construye_de_alojamientos ns1:alojamiento12,
+        ns1:alojamiento17,
+        ns1:alojamiento2,
+        ns1:alojamiento22,
+        ns1:alojamiento7 .
+
+ns1:alojamiento12 a ns1:alojamiento ;
+    ns1:coste "72" ;
+    ns1:es_ofrecido_por ns1:compania13 ;
+    ns1:se_encuentra_en ns1:localizacion15 ;
+    ns1:tiene_como_horario ns1:periodo14 .
+
+ns1:alojamiento17 a ns1:alojamiento ;
+    ns1:coste "77" ;
+    ns1:es_ofrecido_por ns1:compania18 ;
+    ns1:se_encuentra_en ns1:localizacion20 ;
+    ns1:tiene_como_horario ns1:periodo19 .
+
+ns1:alojamiento2 a ns1:alojamiento ;
+    ns1:coste "87" ;
+    ns1:es_ofrecido_por ns1:compania3 ;
+    ns1:se_encuentra_en ns1:localizacion5 ;
+    ns1:tiene_como_horario ns1:periodo4 .
+
+ns1:alojamiento22 a ns1:alojamiento ;
+    ns1:coste "102" ;
+    ns1:es_ofrecido_por ns1:compania23 ;
+    ns1:se_encuentra_en ns1:localizacion25 ;
+    ns1:tiene_como_horario ns1:periodo24 .
+
+ns1:alojamiento7 a ns1:alojamiento ;
+    ns1:coste "65" ;
+    ns1:es_ofrecido_por ns1:compania8 ;
+    ns1:se_encuentra_en ns1:localizacion10 ;
+    ns1:tiene_como_horario ns1:periodo9 .
+
+ns1:ciudad11 a ns1:ciudad ;
+    ns1:nombre "BARCELONA"^^xsd:string .
+
+ns1:ciudad16 a ns1:ciudad ;
+    ns1:nombre "BARCELONA"^^xsd:string .
+
+ns1:ciudad21 a ns1:ciudad ;
+    ns1:nombre "BARCELONA"^^xsd:string .
+
+ns1:ciudad26 a ns1:ciudad ;
+    ns1:nombre "BARCELONA"^^xsd:string .
+
+ns1:ciudad6 a ns1:ciudad ;
+    ns1:nombre "BARCELONA"^^xsd:string .
+
+ns1:compania13 a ns1:compania ;
+    ns1:nombre "Hotel Carlos III" .
+
+ns1:compania18 a ns1:compania ;
+    ns1:nombre "Hostal Pedro" .
+
+ns1:compania23 a ns1:compania ;
+    ns1:nombre "Hotel Buenavista" .
+
+ns1:compania3 a ns1:compania ;
+    ns1:nombre "NH Hoteles" .
+
+ns1:compania8 a ns1:compania ;
+    ns1:nombre "Hotel Maria" .
+
+ns1:localizacion10 a ns1:localizacion ;
+    ns1:direccion "Aragon 23" ;
+    ns1:pertenece_a ns1:ciudad11 .
+
+ns1:localizacion15 a ns1:localizacion ;
+    ns1:direccion "Plaza España" ;
+    ns1:pertenece_a ns1:ciudad16 .
+
+ns1:localizacion20 a ns1:localizacion ;
+    ns1:direccion "Pablo Neruda 12" ;
+    ns1:pertenece_a ns1:ciudad21 .
+
+ns1:localizacion25 a ns1:localizacion ;
+    ns1:direccion "Avenida del Canal 3" ;
+    ns1:pertenece_a ns1:ciudad26 .
+
+ns1:localizacion5 a ns1:localizacion ;
+    ns1:direccion "Diagonal 54" ;
+    ns1:pertenece_a ns1:ciudad6 .
+
+ns1:periodo14 a ns1:periodo ;
+    ns1:dia_de_la_semana "Miercoles" ;
+    ns1:fin "11/06/2017" ;
+    ns1:inicio "07/06/2017" .
+
+ns1:periodo19 a ns1:periodo ;
+    ns1:dia_de_la_semana "Miercoles" ;
+    ns1:fin "11/06/2017" ;
+    ns1:inicio "07/06/2017" .
+
+ns1:periodo24 a ns1:periodo ;
+    ns1:dia_de_la_semana "Miercoles" ;
+    ns1:fin "11/06/2017" ;
+    ns1:inicio "07/06/2017" .
+
+ns1:periodo4 a ns1:periodo ;
+    ns1:dia_de_la_semana "Miercoles" ;
+    ns1:fin "11/06/2017" ;
+    ns1:inicio "07/06/2017" .
+
+ns1:periodo9 a ns1:periodo ;
+    ns1:dia_de_la_semana "Miercoles" ;
+    ns1:fin "11/06/2017" ;
+    ns1:inicio "07/06/2017" .
+
