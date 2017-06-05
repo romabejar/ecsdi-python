@@ -1,3 +1,6 @@
+
+__author__ = 'bejar'
+
 """
 .. module:: FlaskAgent
 FlaskAgent
@@ -22,25 +25,101 @@ FlaskAgent
 :Version: 
 :Created on: 18/02/2015 8:28 
 """
-
-__author__ = 'bejar'
-
+from AgentUtil.Agent import Agent
+from AgentUtil.ACLMessages import get_message_properties, build_message, register_agent, send_message
+from AgentUtil.OntoNamespaces import ACL, ECSDI
 from flask import Flask, request
 import argparse
 import requests
+from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
 from requests import ConnectionError
-from multiprocessing import Process
-
+from multiprocessing import Process, Queue
+from AgentUtil.Logging import config_logger
+from AgentUtil.FlaskServer import shutdown_server
+import socket
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
-parser.add_argument('--host', default='localhost', help="Host del agente")
+parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
+                    default=False)
 parser.add_argument('--port', type=int, help="Puerto de comunicacion del agente")
-parser.add_argument('--acomm', help='Direccion del agente con el que comunicarse')
-parser.add_argument('--aport', type=int, help='Puerto del agente con el que comunicarse')
-parser.add_argument('--messages', nargs='+', default=[], help="mensajes a enviar")
+parser.add_argument('--dhost', default=socket.gethostname(), help="Host del agente de directorio")
+parser.add_argument('--dport', type=int, help="Puerto de comunicacion del agente de directorio")
 
-app = Flask(__name__)
+# Logging
+logger = config_logger(level=1)
 
+# parsing de los parametros de la linea de comandos
+args = parser.parse_args()
+
+# Configuration stuff
+if args.port is None:
+    port = 9000
+else:
+    port = args.port
+
+if args.open is None:
+    hostname = '0.0.0.0'
+else:
+    hostname = socket.gethostname()
+
+if args.dport is None:
+    dport = 9081
+else:
+    dport = args.dport
+
+if args.dhost is None:
+    dhostname = socket.gethostname()
+else:
+    dhostname = args.dhost
+    # Agent Namespace
+    agn = Namespace("http://www.agentes.org#")
+
+    # Message Count
+    mss_cnt = 0
+
+    # Data Agent
+    # Datos del Agente
+    AgGestordeTransporte = Agent('AgGestordeTransporte',
+                        agn.AgGestordeTransporte,
+                        'http://%s:%d/comm' % (hostname, port),
+                        'http://%s:%d/Stop' % (hostname, port))
+
+    # Directory agent address
+    DirectoryAgent = Agent('DirectoryAgent',
+                           agn.Directory,
+                           'http://%s:%d/Register' % (dhostname, dport),
+                           'http://%s:%d/Stop' % (dhostname, dport))
+
+    # Global triplestore graph
+    dsGraph = Graph()
+
+    # Queue
+    queue = Queue()
+
+    # Flask app
+    app = Flask(__name__)
+
+
+def get_count():
+    global mss_cnt
+    mss_cnt += 1
+    return mss_cnt
+
+
+def register_message():
+    """
+    Envia un mensaje de registro al servicio de registro
+    usando una performativa Request y una accion Register del
+    servicio de directorio
+
+    :param gmess:
+    :return:
+    """
+
+    logger.info('Nos registramos')
+
+    gr = register_agent(AgGestordeTransporte, DirectoryAgent, AgGestordeTransporte.uri, get_count())
+    return gr
 
 @app.route("/")
 def isalive():
@@ -51,62 +130,144 @@ def isalive():
     return 'alive'
 
 
-@app.route("/comunica")
-def servicio():
+def buscar_transportes_externamente(ciudadOrigen, ciudadDestino, inicioData, finData):
     """
-    Entrada del servicio que recibe los mensajes
+    calls to /browsequotes/v1.0/{country}/{currency}/{locale}/{originPlace}/{destinationPlace}/{outboundPartialDate}/{inboundPartialDate}
     :return:
     """
-    x = request.args['content']
-    print 'recibido', x
-    return x
+    apikey = 'ec979327405027392857443412271857'
+    country = 'Spain'
+    currency = request.args["currency"]
+    locale = request.args["locale"]
+    originplace = request.args["originplace"]
+    destinationplace = request.args["destinationplace"]
+    outbounddate = request.args["outbounddate"]
+    inbounddate = request.args["inbounddate"]
+
+    baseURL = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'
+    requestURL = country+'/'+currency+'/'+locale+'/'+originplace+'/'+destinationplace+'/'+outbounddate+'/'+inbounddate+'?apikey='+apikey
+    print baseURL+requestURL
+    r = requests.get(baseURL+requestURL)
+    print r.status_code
+    return 0
 
 
-def behavior(mess, comm):
+@app.route("/comm")
+def communication():
     """
-    Thread del programa que se encarga de enviar los mensajes al otro servicio
-    :param mess:
-    :param comm:
-    :return:
+    Communication Entrypoint
     """
-    # Direccion del servicio con el que nos comunicamos
-    address = 'http://%s:%d/' % (comm[0], comm[1])
+    logger.info('Peticion de informacion recibida')
+    global dsGraph
 
-    # Comprobamos que el otro servicio este en marcha
-    # Esto tambien se podria hacer simplemente enviando mensajes a la entrada
-    # /comunica del otro servicio y esperar a que haya una respuesta
-    alive = False
-    while not alive:
-        try:
-            r = requests.get(address)
-            alive = r.text == 'alive'
-        except ConnectionError:
-            pass
+    message = request.args['content']
+    gm = Graph()
+    gm.parse(data=message)
 
-    print 'Is Alive'
+    msgdic = get_message_properties(gm)
 
-    # Enviamos todos los mensajes
-    for m in mess:
-        print 'enviando', m
-        r = requests.get(address + 'comunica', params={'content': m})
-        print r.text
+
+    if msgdic is None:
+        # Si no es, respondemos que no hemos entendido el mensaje
+        gr = build_message(Graph(),
+                           ACL['not-understood'],
+                           sender=AgGestordeTransporte.uri,
+                           msgcnt=get_count())
+    else:
+        # Obtenemos la performativa
+        if msgdic['performative'] != ACL.request:
+            # Si no es un request, respondemos que no hemos entendido el mensaje
+            gr = build_message(Graph(),
+                               ACL['not-understood'],
+                               sender=DirectoryAgent.uri,
+                               msgcnt=get_count())
+        else:
+
+            content = msgdic['content']
+            # Averiguamos el tipo de la accion
+            accion = gm.value(subject=content, predicate=RDF.type)
+
+            if accion == ECSDI.peticion_de_transportes:
+
+                # ciudades
+                origen = gm.value(subject=content, predicate=ECSDI.tiene_como_origen)
+                destino = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
+                # valores
+                ciudadOrigen = gm.value(subject=origen, predicate=ECSDI.nombre)
+                ciudadDestino = gm.value(subject=destino, predicate=ECSDI.nombre)
+
+                # fechas
+                fechaIda = gm.value(subject=content, predicate=ECSDI.tiene_como_periodo_susceptible_de_ida)
+                fechaVuelta = gm.value(subject=content, predicate=ECSDI.tiene_como_periodo_susceptible_de_vuelta)
+                #valores
+                inicioData = gm.value(subject=fechaIda, predicate=ECSDI.inicio)
+                finData = gm.value(subject=fechaVuelta, predicate=ECSDI.fin)
+
+
+                logger.info("Mensaje peticion de transportes")
+
+                gr = buscar_transportes_externamente(ciudadOrigen, ciudadDestino, inicioData, finData)
+
+                #gr.serialize(destination='../data/alojamientos-' + str(nombreCiudad), format='turtle')
+
+                gr = build_message(gr,
+                                   ACL['inform-'],
+                                   sender=AgGestordeTransporte.uri,
+                                   msgcnt=mss_cnt,
+                                   receiver=msgdic['sender'])
+
+
+            else:
+                gr = build_message(Graph(),
+                                   ACL['not-understood'],
+                                   sender=DirectoryAgent.uri,
+                                   msgcnt=get_count())
+
+    #serialize = gr.serialize(format='xml')
+    #return 200
+
+@app.route("/Stop")
+def stop():
+    """
+    Entrypoint to the agent
+    :return: string
+    """
+
+    tidyUp()
+    shutdown_server()
+    return "Stopping server"
+
+def tidyUp():
+    """
+    Previous actions for the agent.
+    """
+
+    global queue
+    queue.put(0)
+
+    pass
+
+
+def agent_behaviour(queue):
+    """
+    Agent Behaviour in a concurrent thread.
+    :param queue: the queue
+    :return: something
+    """
+
+    gr = register_message()
+
 
 
 if __name__ == '__main__':
+    # ------------------------------------------------------------------------------------------------------
+    # Run behaviors
+    ab1 = Process(target=agent_behaviour, args=(queue,))
+    ab1.start()
 
-    # parsing de los parametros de la linea de comandos
-    args = parser.parse_args()
+    # Run server
+    app.run(host=hostname, port=port, debug=True)
 
-    # Ponemos en marcha el comportamiento si se indica una direccion
-    if args.acomm is not None:
-        ab = Process(target=behavior, args=(args.messages, (args.acomm, args.aport)))
-        ab.start()
-
-    # Ponemos en marcha el servidor
-    app.run(host=args.host, port=args.port)
-
-    # Esperamos a que acaben los behaviors
-    if args.acomm is not None:
-        ab.join()
-
-    print 'The End'
+    # Wait behaviors
+    ab1.join()
+    print('The End')

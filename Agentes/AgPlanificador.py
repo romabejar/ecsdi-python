@@ -148,7 +148,7 @@ def communication():
                 # ciudad -> ciudOrg
                 # ciudadOrigen -> ciudadOrigen
                 
-                ciudOrg = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
+                ciudOrg = gm.value(subject=content, predicate=ECSDI.tiene_como_origen)
                 ciudadOrigen = gm.value(subject=ciudOrg, predicate=ECSDI.nombre)
 
                 ciudDes = gm.value(subject=content, predicate=ECSDI.tiene_como_destino)
@@ -184,7 +184,7 @@ def communication():
                 logger.info("Grafo respuesta de actividades recibido")
 
                 # TODO: Llamar al agente de vuelos con el grafo correspondiente
-                # gr_vuelos = buscar_transporte(**restriccions_vuelos)
+                gr_vuelos = buscar_transporte(ciudadOrigen, ciudadDestino, finData, inicioData)
                 logger.info("Grafo respuesta de vuelos recibido")
 
                 # TODO: Llamar al agente de alojamiento con el grafo correspondiente
@@ -231,19 +231,51 @@ def buscar_actividades():
 
     return gr
 
-def buscar_transporte(ciudadNombre='Barcelona'):
+def buscar_transporte(ciudadOrigen, ciudadDestino, finData, inicioData):
     #creamos el contenido
+    content = ECSDI['peticion_de_transportes' + str(get_count())]
 
     #creamos los objetos necesarios para las tripletas del grafo
+    fechaIda = ECSDI['periodo' + str(get_count())]
+    fechaVuelta = ECSDI['periodo' + str(get_count())]
+
+    destino = ECSDI['ciudad' + str(get_count())]
+    origen = ECSDI['ciudad' + str(get_count())]
 
     #Creamos el grafo con las tripletas
+    grafo = Graph()
+    grafo.add((destino, RDF.type, ECSDI.ciudad))
+    grafo.add((origen, RDF.type, ECSDI.ciudad))
+    grafo.add((fechaIda, RDF.type, ECSDI.periodo))
+    grafo.add((fechaVuelta, RDF.type, ECSDI.periodo))
+    # seteamos la fecha de Ida (periodo de inicio es inicio y fin = inicioData)
+    grafo.add((fechaIda, ECSDI.inicio, Literal(inicioData)))
+    grafo.add((fechaIda, ECSDI.fin, Literal(inicioData)))
+    # seteamos la fecha de Vuelta con periodo = finData
+    grafo.add((fechaVuelta, ECSDI.inicio, Literal(finData)))
+    grafo.add((fechaVuelta, ECSDI.fin, Literal(finData)))
+
+    grafo.add((origen, ECSDI.nombre, Literal(ciudadOrigen)))
+    grafo.add((destino, ECSDI.nombre, Literal(ciudadDestino)))
+
+
+    grafo.add((content, RDF.type, ECSDI.peticion_de_transportes))
+    grafo.add((content, ECSDI.tiene_como_origen, URIRef(origen)))
+    grafo.add((content, ECSDI.tiene_como_destino, URIRef(destino)))
+    grafo.add((content, ECSDI.tiene_como_periodo_susceptible_de_ida, URIRef(fechaIda)))
+    grafo.add((content, ECSDI.tiene_como_periodo_susceptible_de_vuelta, URIRef(fechaVuelta)))
 
     #Preguntamos por el agente que necesitamos
+    agente_transportes = get_agent_info(agn.AgGestordeTransporte, DirectoryAgent, PlannerAgent, get_count())
+
 
     #Enviamos el mensaje
+    gr = send_message(build_message(grafo, perf=ACL.request, sender=PlannerAgent.uri, receiver=agente_transportes.uri,
+                                    msgcnt=get_count(),
+                                    content=content), agente_transportes.address)
 
     #Retornamos el grafo respuesta del mensaje
-    return 0
+    return gr
 
 
 def buscar_alojamiento(ciudadNombre='Barcelona'):
@@ -259,6 +291,7 @@ def buscar_alojamiento(ciudadNombre='Barcelona'):
     grafo.add((ciudad, RDF.type, ECSDI.ciudad))
     grafo.add((localizacion, RDF.type, ECSDI.localizacion))
     grafo.add((ciudad, ECSDI.nombre, Literal(ciudadNombre)))
+
     grafo.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad)))
     grafo.add((content, RDF.type, ECSDI.peticion_de_alojamiento))
     grafo.add((content, ECSDI.tiene_como_restriccion_de_localizacion, URIRef(localizacion)))

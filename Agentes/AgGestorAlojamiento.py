@@ -7,26 +7,21 @@ Agent que implementa la interacció amb l'usuari
 
 @author: bejar
 """
-import random
 
-import json
-import pprint
+import argparse
 import os.path
-import argparse
-from multiprocessing import Queue, Process
-import sys
-from AgentUtil.ACLMessages import get_agent_info, send_message, build_message, get_message_properties, register_agent
-from AgentUtil.OntoNamespaces import ECSDI, ACL
-from googleplaces import GooglePlaces
-import argparse
 import socket
 from multiprocessing import Process
-from flask import Flask, render_template, request
-from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
+from multiprocessing import Queue
+
+from flask import Flask, request
+from rdflib import Graph, Namespace, RDF, URIRef, Literal
+
+from AgentUtil.ACLMessages import build_message, get_message_properties, register_agent
 from AgentUtil.Agent import Agent
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Logging import config_logger
-
+from AgentUtil.OntoNamespaces import ECSDI, ACL
 
 __author__ = 'bejar'
 
