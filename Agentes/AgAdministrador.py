@@ -20,7 +20,6 @@ from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
 from AgentUtil.Agent import Agent
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Logging import config_logger
-from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 __author__ = 'bejar'
@@ -180,9 +179,9 @@ def browser_cerca():
 
     actividades = []
     for s, p, o in gresp:
-        print p
+        # print p
         if p == ECSDI.coste:
-           print True
+           # print True
            actividades.append(o)
 
     return render_template('activities.html', actividades=actividades)

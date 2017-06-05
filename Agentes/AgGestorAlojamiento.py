@@ -284,7 +284,7 @@ def buscar_alojamientos_externamente(ciudadNombre):
 
         # TODO: Por cada sub-objeto de actividad crear sus tripletas que lo representan
         # Compania
-        print index
+        # print index
         gr.add((compania, RDF.type, ECSDI.compania))
         gr.add((compania, ECSDI.nombre, Literal(array_nombres_Companias[index])))
 

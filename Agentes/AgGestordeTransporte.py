@@ -1,4 +1,5 @@
 
+
 __author__ = 'bejar'
 
 """
@@ -25,6 +26,7 @@ FlaskAgent
 :Version: 
 :Created on: 18/02/2015 8:28 
 """
+from skyscanner.skyscanner import FlightsCache
 from AgentUtil.Agent import Agent
 from AgentUtil.ACLMessages import get_message_properties, build_message, register_agent, send_message
 from AgentUtil.OntoNamespaces import ACL, ECSDI
@@ -37,6 +39,9 @@ from multiprocessing import Process, Queue
 from AgentUtil.Logging import config_logger
 from AgentUtil.FlaskServer import shutdown_server
 import socket
+
+
+
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
 parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
@@ -136,20 +141,41 @@ def buscar_transportes_externamente(ciudadOrigen, ciudadDestino, inicioData, fin
     :return:
     """
     apikey = 'ec979327405027392857443412271857'
-    country = 'Spain'
-    currency = request.args["currency"]
-    locale = request.args["locale"]
-    originplace = request.args["originplace"]
-    destinationplace = request.args["destinationplace"]
-    outbounddate = request.args["outbounddate"]
-    inbounddate = request.args["inbounddate"]
+
+    country = 'UK'
+    currency = 'GBP'
+    locale = 'en-GB'
+    originplace = 'SIN-sky'
+    destinationplace = 'KUL-sky'
+    outbounddate = '2015-05'
+    inbounddate = '2015-06'
 
     baseURL = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'
     requestURL = country+'/'+currency+'/'+locale+'/'+originplace+'/'+destinationplace+'/'+outbounddate+'/'+inbounddate+'?apikey='+apikey
-    print baseURL+requestURL
+    # print baseURL+requestURL
     r = requests.get(baseURL+requestURL)
-    print r.status_code
-    return 0
+    # print r.status_code
+    #
+
+    # flights_service = Flights('ec979327405027392857443412271857')
+
+    # flights_cache_service = FlightsCache('ec979327405027392857443412271857')
+    # logger.info('Me coje la APIkey')
+    # result = flights_cache_service.get_cheapest_price_by_route(
+    #     country='UK',
+    #     currency='GBP',
+    #     locale='en-GB',
+    #     originplace='SIN-sky',
+    #     destinationplace='KUL-sky',
+    #     outbounddate='2015-05',
+    #     inbounddate='2015-06')
+    #
+    # logger.info('RESULT API')
+    # logger.info(result)
+
+    logger.info('RESULT')
+    logger.info(r)
+    return r, 200
 
 
 @app.route("/comm")
@@ -166,7 +192,7 @@ def communication():
 
     msgdic = get_message_properties(gm)
 
-
+    gr = Graph()
     if msgdic is None:
         # Si no es, respondemos que no hemos entendido el mensaje
         gr = build_message(Graph(),
@@ -224,7 +250,9 @@ def communication():
                                    msgcnt=get_count())
 
     #serialize = gr.serialize(format='xml')
-    #return 200
+    logger('HOLA')
+    logger(gr)
+    return gr, 200
 
 @app.route("/Stop")
 def stop():

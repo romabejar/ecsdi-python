@@ -185,7 +185,7 @@ def communication():
                     index = 0
                     for place in data_dict:
                         index += 1
-                        print place
+                        # print place
                         act_obj = ECSDI['activity' + str(get_count())]
                         loc_obj = ECSDI['location' + str(get_count())]
                         periodo = ECSDI['period' + str(get_count())]
@@ -218,7 +218,7 @@ def communication():
                         gr.add((act_obj, ECSDI.es_ofrecido_por, URIRef(compania)))
                         gr.add((content, ECSDI.se_construye_de_actividades, URIRef(act_obj)))
 
-                print index
+                # print index
                 gr.serialize(destination='../data/compres', format='turtle')
 
                 gr = build_message(gr,

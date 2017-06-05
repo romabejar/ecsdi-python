@@ -12,7 +12,6 @@ import random
 import sys
 
 from rdflib.namespace import FOAF, RDFS
-
 from AgentUtil.ACLMessages import get_agent_info, send_message, build_message, get_message_properties
 from AgentUtil.OntoNamespaces import ECSDI, ACL, DSO
 import argparse
