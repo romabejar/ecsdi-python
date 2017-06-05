@@ -2,20 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
     <title>Plan viaje</title>
 </head>
 <body>
 <h1>Busqueda de un plan de viaje</h1>
-<a href="javascript:history.back()">< Volver</a>
 <form method="post" action="/cerca">
-    <input type="text" name="originCity" placeholder="Ciudad de origen"/><br>
-    <input type="text" name="destinationCity" placeholder="Ciudad de destino"/><br>
-    <input type="date" name="initDate" placeholder="Fecha de ida"/><br>
-    <input type="date" name="finDate" placeholder="Fecha de vuelta"/><br>
-    <input type="number" name="ponderacionLudica" placeholder="ponderacion Ludica"/><br/>
-    <input type="number" name="ponderacionCultural" placeholder="ponderacion Cultural"/><br/>
-    <input type="number" name="ponderacionFestiva" placeholder="ponderacion Festiva"/><br/>
+    Origen:
+    <input type="text" name="originCity" placeholder="Ciudad de origen"/><br> <br>
+    Destino:
+    <input type="text" name="destinationCity" placeholder="Ciudad de destino"/><br> <br>
+    Ida:
+    <input type="date" name="initDate" placeholder="Fecha de ida"/><br> <br>
+    Vuelta:
+    <input type="date" name="finDate" placeholder="Fecha de vuelta"/><br> <br>
+    Seleccione un valor (1-5):
+    <input list="pLudica" name="ponderacionLudica" placeholder="ponderacion Ludica"/><br/> <br>
+    <datalist id="pLudica">
+        <option value="1">
+        <option value="2">
+        <option value="3">
+        <option value="4">
+        <option value="5">
+    </datalist>
+    Seleccione un valor (1-5):
+    <input list="pCultural" name="ponderacionCultural" placeholder="ponderacion Cultural"/><br/> <br>
+    <datalist id="pCultural">
+        <option value="1">
+        <option value="2">
+        <option value="3">
+        <option value="4">
+        <option value="5">
+    </datalist>
+    Seleccione un valor (1-5):
+    <input list="pFestiva" name="ponderacionFestiva" placeholder="ponderacion Festiva"/><br/> <br>
+    <datalist id="pFestiva">
+        <option value="1">
+        <option value="2">
+        <option value="3">
+        <option value="4">
+        <option value="5">
+    </datalist>
 
     <input type="submit" value="Buscar">
 </form>

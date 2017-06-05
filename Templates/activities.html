@@ -2,23 +2,167 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/-c9bKgaRfC3Q/AAAAAAAAAAI/AAAAAAAAJUE/Eo2MLCqyiZs/s0-c-k-no-ns/photo.jpg">
+    <link rel="shortcut icon" href="./templates/air_plane.ico">
     <title>Tus planes</title>
 </head>
 <body>
-    <h1>Actividades</h1>
+    <h1>Plan de viaje</h1>
     <br>
-    <table cellpadding="5px">
+    <h2>Identificador del plan</h2>
+    <p>{{ identificador[0] }} </p>
+
+    <h2>Datos del alojamiento</h2>
+    <table class="Alojamiento" cellpadding="5px" border="1">
         <tr>
-            <th><b>NOMBRE</b></th>
+            <td><b>Nombre</b></td>
+            <td><b>Direccion</b></td>
+            <td><b>Ciudad</b></td>
+            <td><b>Pais</b></td>
+            <td><b>Fecha de inicio</b></td>
+            <td><b>Fecha de finalizacion</b></td>
+            <td><b>Coste</b></td>
         </tr>
-        {% for item in actividades %}
+        <tr>
+            <td>{{ datos_alojamiento[0] }}</td>
+            <td>{{ datos_alojamiento[1] }}</td>
+            <td>{{ datos_alojamiento[2] }}</td>
+            <td>{{ datos_alojamiento[3] }}</td>
+            <td>{{ datos_alojamiento[4] }}</td>
+            <td>{{ datos_alojamiento[5] }}</td>
+            <td>{{ datos_alojamiento[6] }}</td>
+        </tr>
+    </table>
+
+
+    <h2>Datos del transporte</h2>
+    <table cellpadding="5px" >
+        <tr>
+            <td><h3>Ida</h3></td>
+            <td><h3>Vuelta</h3></td>
+        </tr>
+            <td>
+                <table class="TransporteIda" cellpadding="5px" border="1">
+                    <tr>
+                        <td></td>
+                        <td><b>Salida</b></td>
+                        <td><b>Llegada</b></td>
+                    </tr>
+                    <tr>
+                        <td><b>Compania</b></td>
+                        <td colspan="3">{{ datos_transporte_ida[1] }}</td> <!--Compania-->
+                    </tr>
+                    <tr>
+                        <td><b>Hora</b></td>
+                        <td>{{ datos_transporte_ida[0] }}</td> <!--horaS-->
+                        <td>{{ datos_transporte_ida[6] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Aeropuerto/Estacion</b></td>
+                        <td>{{ datos_transporte_ida[2] }}</td> <!--aeropuertoS-->
+                        <td>{{ datos_transporte_ida[7] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Direccion</b></td>
+                        <td>{{ datos_transporte_ida[3] }}</td> <!--localizacionS-->
+                        <td>{{ datos_transporte_ida[8] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Ciudad</b></td>
+                        <td>{{ datos_transporte_ida[4] }}</td> <!--ciudadS-->
+                        <td>{{ datos_transporte_ida[9] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Pais</b></td>
+                        <td>{{ datos_transporte_ida[5] }}</td> <!--paisS-->
+                        <td>{{ datos_transporte_ida[10] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Coste</b></td>
+                        <td colspan="2">{{ datos_transporte_ida[11] }}</td> <!--coste-->
+                    </tr>
+                </table>
+            </td>
+
+            <td>
+                <table class="TransporteVuelta" cellpadding="5px" border="1">
+                    <tr>
+                        <td></td>
+                        <td><b>Salida</b></td>
+                        <td><b>Llegada</b></td>
+                    </tr>
+                    <tr>
+                        <td><b>Compania</b></td>
+                        <td colspan="2">{{ datos_transporte_vuelta[1] }}</td> <!--Compania-->
+                    </tr>
+                    <tr>
+                         <td><b>Hora</b></td>
+                        <td>{{ datos_transporte_vuelta[0] }}</td> <!--horaS-->
+                        <td>{{ datos_transporte_vuelta[6] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Aeropuerto/Estacion</b></td>
+                        <td>{{ datos_transporte_vuelta[2] }}</td> <!--aeropuertoS-->
+                        <td>{{ datos_transporte_vuelta[7] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Direccion</b></td>
+                        <td>{{ datos_transporte_vuelta[3] }}</td> <!--localizacionS-->
+                        <td>{{ datos_transporte_vuelta[8] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Ciudad</b></td>
+                        <td>{{ datos_transporte_vuelta[4] }}</td> <!--ciudadS-->
+                        <td>{{ datos_transporte_vuelta[9] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Pais</b></td>
+                        <td>{{ datos_transporte_vuelta[5] }}</td> <!--paisS-->
+                        <td>{{ datos_transporte_vuelta[10] }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Coste</b></td>
+                        <td colspan="2">{{ datos_transporte_vuelta[11] }}</td> <!--coste-->
+                    </tr>
+                </table>
+            </td>
+        </trd>
+    </table>
+
+
+    <h2>Actividades por dia</h2>
+    <table class="Plan_dia" cellpadding="5px" border="1">
+        <tr>
+            <td><h3>Fecha</h3></td>
+            <td><h3>Periodo</h3></td>
+            <td><h3>Localizacion</h3></td>
+            <td><h3>Compania</h3></td>
+            <td><h3>Coste</h3></td>
+        </tr>
+        {% for actividad in datos_plan_dia %}
             <tr>
-                {{item}}
+                <td>{{ actividad[0] }}</td> <!--Data-->
+                <td>{{ actividad[1] }} - {{ actividad[2] }}</td> <!--Periodo: inicio-final-->
+                <td>{{ actividad[3] }}, {{ actividad[4] }}, {{ actividad[5] }}</td> <!--Localizacion: direccion, ciudad, pais-->
+                <td>{{ actividad[6] }}</td> <!--Compania-->
+                <td>{{ actividad[7] }}</td> <!--Coste-->
             </tr>
         {% endfor %}
+
     </table>
+
     <br>
-    <a href="./cerca">Volver</a>
+
+
+    <a href="./">Volver</a>
+
+    <p id="pagar_plan"></p>
+    <button onclick="myFunction()">Aceptar plan</button>
+
+    <script>
+    function myFunction() {
+        document.getElementById("pagar_plan").innerHTML = "Se procede a pagar el plan";
+    }
+    </script>
+
 </body>
 </html>
