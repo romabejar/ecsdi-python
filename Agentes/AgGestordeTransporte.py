@@ -136,47 +136,59 @@ def isalive():
 
 
 def buscar_transportes_externamente(ciudadOrigen, ciudadDestino, inicioData, finData):
-    """
-    calls to /browsequotes/v1.0/{country}/{currency}/{locale}/{originPlace}/{destinationPlace}/{outboundPartialDate}/{inboundPartialDate}
-    :return:
-    """
-    apikey = 'ec979327405027392857443412271857'
 
-    country = 'UK'
-    currency = 'GBP'
-    locale = 'en-GB'
-    originplace = 'SIN-sky'
-    destinationplace = 'KUL-sky'
-    outbounddate = '2015-05'
-    inbounddate = '2015-06'
 
-    baseURL = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'
-    requestURL = country+'/'+currency+'/'+locale+'/'+originplace+'/'+destinationplace+'/'+outbounddate+'/'+inbounddate+'?apikey='+apikey
-    # print baseURL+requestURL
-    r = requests.get(baseURL+requestURL)
-    # print r.status_code
-    #
+    # Creamos un array con 5 transportes vacios
+    transporte_array = [1, 2, 3, 4, 5]
+    # Esto seran las arrays con los valores aleatorios que se asignaran a las tripletas(basados en los atributos de un alojamiento de la ontologia)
+    array_nombres_Companias = ["EmpresaT1","EmpresaT2","EmpresaT3","EmpresaT4", "EmpresaT5"]
+    array_precios = ["78", "94", "230", "44", "10"]
+    array_datetimes = ["07/06/2017;10:00","11/06/2017;14:00"]
+    array_aeropuertos = ["Aeroport del Prat", "Aeropuerto Madrd-Barajas", "Aeropuerto de Salamanca", "Aeropuerto de Castellon", "Aeropuerto de Mallorca"]
+    index = 0
+    gr = Graph()
+    content = ECSDI['respuesta_de_transporte' + str(get_count())]
+    gr.add((content, RDF.type, ECSDI.respuesta_de_transporte))
 
-    # flights_service = Flights('ec979327405027392857443412271857')
+    for trans in transporte_array:
+        # TODO: Mirar ontologia que se necesita para representar un alojamiento
+        # TODO: Aqui crear los objetos necesarios
+        transporte = ECSDI['transporte' + str(get_count())]
+        compania = ECSDI['compania' + str(get_count())]
+        sale_de = ECSDI['aeropuerto'+str(get_count())]
+        llega_a = ECSDI['aeropuerto'+str(get_count())]
 
-    # flights_cache_service = FlightsCache('ec979327405027392857443412271857')
-    # logger.info('Me coje la APIkey')
-    # result = flights_cache_service.get_cheapest_price_by_route(
-    #     country='UK',
-    #     currency='GBP',
-    #     locale='en-GB',
-    #     originplace='SIN-sky',
-    #     destinationplace='KUL-sky',
-    #     outbounddate='2015-05',
-    #     inbounddate='2015-06')
-    #
-    # logger.info('RESULT API')
-    # logger.info(result)
+        # TODO: Por cada sub-objeto de actividad crear sus tripletas que lo representan
+        # Compania
+        gr.add((compania, RDF.type, ECSDI.compania))
+        gr.add((compania, ECSDI.nombre, Literal(array_nombres_Companias[index])))
 
-    logger.info('RESULT')
-    logger.info(r)
-    return r, 200
+        # Llega a
+        gr.add((llega_a, RDF.type, ECSDI.aeropuerto))
+        gr.add((llega_a, ECSDI.nombre, Literal(array_aeropuertos[index%2])))
 
+        # Sale_de
+        gr.add((sale_de, RDF.type, ECSDI.aeropuerto))
+        gr.add((sale_de, ECSDI.nombre, Literal(array_aeropuertos[2])))
+
+
+        # TODO: Crear las tripletas propias del alojamiento y linkar los objetos creados anteriormente
+        # Transporte
+        gr.add((transporte, RDF.type, ECSDI.transporte))
+        gr.add((transporte, ECSDI.llega_a, URIRef(llega_a)))
+        gr.add((transporte, ECSDI.sale_de, URIRef(sale_de)))
+        gr.add((transporte, ECSDI.coste, Literal(array_precios[index])))
+        gr.add((transporte, ECSDI.es_ofrecido_por, URIRef(compania)))
+        gr.add((transporte, ECSDI.llegada, Literal(array_datetimes[1])))
+        gr.add((transporte, ECSDI.salida, Literal(array_datetimes[0])))
+        gr.add((content, ECSDI.se_constituye_de_transportes, URIRef(transporte)))
+        index += 1
+    #Devolvemos el grafo
+    logger.info('DEVOLVEMOS EL GRAFO')
+    transporte = gr.value(subject=content, predicate=ECSDI.se_constituye_de_transportes)
+    juaskas = gr.value(subject=transporte, predicate=ECSDI.llegada)
+    logger.info(juaskas)
+    return gr
 
 @app.route("/comm")
 def communication():
@@ -234,7 +246,6 @@ def communication():
 
                 gr = buscar_transportes_externamente(ciudadOrigen, ciudadDestino, inicioData, finData)
 
-                #gr.serialize(destination='../data/alojamientos-' + str(nombreCiudad), format='turtle')
 
                 gr = build_message(gr,
                                    ACL['inform-'],
@@ -248,11 +259,7 @@ def communication():
                                    ACL['not-understood'],
                                    sender=DirectoryAgent.uri,
                                    msgcnt=get_count())
-
-    #serialize = gr.serialize(format='xml')
-    logger('HOLA')
-    logger(gr)
-    return gr, 200
+    return gr
 
 @app.route("/Stop")
 def stop():
