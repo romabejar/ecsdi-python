@@ -24,6 +24,28 @@ from AgentUtil.Logging import config_logger
 
 __author__ = 'bejar'
 
+class Alojamiento:
+
+    def __init__(self):
+        self.coste = None
+        self.latitud = None
+        self.longitud = None
+
+class Actividad:
+
+    def __init__(self):
+        self.coste = None
+
+class Transporte:
+
+    def __init__(self):
+        self.origen = None
+        self.destino = None
+        self.salida = None
+        self.llegada = None
+        self.coste = None
+
+
 # Definimos los parametros de la linea de comandos
 parser = argparse.ArgumentParser()
 parser.add_argument('--open', help="Define si el servidor est abierto al exterior o no", action='store_true',
@@ -178,20 +200,41 @@ def communication():
                 restriccions_alojamientos['ciudadNombre']=ciudadDestino
 
                 gr_actividades = buscar_actividades()
+
                 # Llamada a la funcion que busca las actividades entre las fechas establecidas
 
                 gr = gr_actividades #Esto es temporal, para que se devuelva el grafo de actividades y poder ver algo
                 logger.info("Grafo respuesta de actividades recibido")
 
                 # TODO: Llamar al agente de vuelos con el grafo correspondiente
-                # gr_vuelos = buscar_transporte(**restriccions_vuelos)
+                gr_vuelos = buscar_transporte(**restriccions_vuelos)
                 logger.info("Grafo respuesta de vuelos recibido")
+
 
                 # TODO: Llamar al agente de alojamiento con el grafo correspondiente
                 gr_alojamiento= buscar_alojamiento(**restriccions_alojamientos)
                 logger.info("Grafo respuesta de alojamiento recibido")
 
                 # TODO: Crear la funcion de criba y pasarle los datos
+                precioAlojamientoMinimo = 0
+                precioAlojamientoMaximo = 100000
+                precioTransporteMinimo = 0
+                precioTransporteMaximo = 100000
+
+                respuestaPlan = cribar(ciudadOrigen,
+                               ciudadDestino,
+                               inicioData,
+                               finData,
+                               ponderacionLudica,
+                               ponderacionCulturales,
+                               ponderacionFestivas,
+                               precioAlojamientoMinimo,
+                               precioAlojamientoMaximo,
+                               precioTransporteMinimo,
+                               precioTransporteMaximo,
+                               gr_actividades,
+                               gr_alojamiento,
+                               gr_vuelos)
             else:
                 gr = build_message(Graph(),
                                ACL['not-understood'],
@@ -275,6 +318,195 @@ def buscar_alojamiento(ciudadNombre='Barcelona'):
 
     return gr
 
+
+def cribar(ciudadOrigen,
+           ciudadDestino,
+           dataInicio,
+           dataFin,
+           ponderacionLudica,
+           ponderacionCulturales,
+           ponderacionFestivas,
+           precioAlojamientoMinimo,
+           precioAlojamientoMaximo,
+           precioTransporteMinimo,
+           precioTransporteMaximo,
+           gr_actividades,
+           gr_alojamiento,
+           gr_vuelos):
+
+    grafo = Graph()
+    content = ECSDI['respuesta_de_plan' + str(get_count())]
+    grafo.add((content, RDF.type, ECSDI.respuesta_de_plan))
+    plan = ECSDI['plan_de_viaje' + str(get_count())]
+    grafo.add((plan, ECSDI.tiene_como_plan_de_viaje, URIRef(plan)))
+
+    # Cribar Alojamiento
+
+    for s, p, o in gr_alojamiento:
+        if o == ECSDI.alojamiento:
+            coste = gr_alojamiento.value(subject=s,predicate=ECSDI.coste)
+            if coste >= precioAlojamientoMinimo and coste <= precioAlojamientoMaximo:
+
+                alojamiento = s
+
+                compania = gr_alojamiento.value(subject=s, predicate=ECSDI.es_ofrecido_por)
+                nombre_compania = gr_alojamiento.value(subject=compania, predicate=ECSDI.nombre)
+
+                periodo = gr_alojamiento.value(subject=s, predicate=ECSDI.tiene_como_horario)
+                dia_de_la_semana = gr_alojamiento.value(subject=periodo, predicate=ECSDI.dia_de_la_semana)
+                inicio = gr_alojamiento.value(subject=periodo, predicate=ECSDI.inicio)
+                fin = gr_alojamiento.value(subject=periodo, predicate=ECSDI.fin)
+
+                localizacion = gr_alojamiento.value(subject=s,predicate=ECSDI.se_encuentra_en)
+                ciudad = gr_alojamiento.value(subject=localizacion, predicate=ECSDI.pertenece_a)
+                latitud = gr_alojamiento.value(subject=localizacion, predicate=ECSDI.latitud)
+                longitud = gr_alojamiento.value(subject=localizacion, predicate=ECSDI.longitud)
+                direccion = gr_alojamiento.value(subject=localizacion, predicate=ECSDI.direccion)
+                nombre_ciudad = gr_alojamiento.value(subject=ciudad, predicate=ECSDI.nombre)
+
+                # Compania
+                grafo.add((compania, RDF.type, ECSDI.compania))
+                grafo.add((compania, ECSDI.nombre, Literal(nombre_compania)))
+
+                # Periodo
+                grafo.add((periodo, RDF.type, ECSDI.periodo))
+                grafo.add((periodo, ECSDI.dia_de_la_semana, Literal(dia_de_la_semana)))
+                grafo.add((periodo, ECSDI.inicio, Literal(inicio)))
+                grafo.add((periodo, ECSDI.fin, Literal(fin)))
+
+                # Ciudad
+                grafo.add((ciudad, RDF.type, ECSDI.ciudad))
+                grafo.add((ciudad, ECSDI.nombre, Literal(nombre_ciudad)))
+
+                # Localizacion
+                grafo.add((localizacion, RDF.type, ECSDI.localizacion))
+                grafo.add((localizacion, ECSDI.direccion, Literal(direccion)))
+                grafo.add((localizacion, ECSDI.pertenece_a, URIRef(ciudad)))
+
+                # Crear las tripletas
+
+                grafo.add((alojamiento, RDF.type, ECSDI.alojamiento))
+                grafo.add((alojamiento, ECSDI.se_encuentra_en, URIRef(localizacion)))
+                grafo.add((alojamiento, ECSDI.coste, Literal(coste)))
+                grafo.add((alojamiento, ECSDI.es_ofrecido_por, URIRef(compania)))
+                grafo.add((alojamiento, ECSDI.tiene_como_horario, URIRef(periodo)))
+                grafo.add((plan, ECSDI.tiene_como_alojamiento_del_plan, URIRef(alojamiento)))
+
+                break
+
+    # Cribar Transporte
+
+    vuelos_de_ida = []
+    vuelos_de_vuelta = []
+    for s, p, o in gr_vuelos:
+        if o == ECSDI.vuelo:
+            NotImplementedYet = None
+
+
+
+
+    # Cribar Actividades
+    actividades_festivas = []
+    actividades_culturales = []
+    actividades_ludicas = []
+    for s, p, o in gr_actividades:
+        if o == ECSDI.actividad:
+            tipo = gr_actividades.value(subject=s, predicate=ECSDI.tipo_de_actividad)
+            if tipo == "Fiesta":
+                actividades_festivas.__add__(s)
+            elif tipo == "Ludica":
+                actividades_ludicas.__add__(s)
+            elif tipo == "Cultural":
+                actividades_culturales.__add__(s)
+
+    dias_de_plan = (dataFin - dataInicio).days
+    data = dataInicio
+    for i in range(dias_de_plan):
+        plan_de_un_dia = ECSDI['plan_de_un_dia' + str(get_count())]
+        grafo.add(plan_de_un_dia, RDF.type, ECSDI.plan_de_un_dia)
+        grafo.add(plan, ECSDI.tiene_para_cada_dia, plan_de_un_dia)
+
+        tipoActividad = randomPonderado(ponderacionLudica,ponderacionCulturales,ponderacionFestivas)
+        actividadManana = None
+        if tipoActividad == "Ludica":
+            actividadManana = actividades_ludicas.pop()
+        elif tipoActividad == "Cultural":
+            actividadManana = actividades_culturales.pop()
+        elif tipoActividad == "Festiva":
+            actividadManana = actividades_festivas.pop()
+
+        actividadTarde = None
+        if tipoActividad == "Ludica":
+            actividadTarde = actividades_ludicas.pop()
+        elif tipoActividad == "Cultural":
+            actividadTarde = actividades_culturales.pop()
+        elif tipoActividad == "Festiva":
+            actividadTarde = actividades_festivas.pop()
+
+        actividadNoche = None
+        if tipoActividad == "Ludica":
+            actividadNoche = actividades_ludicas.pop()
+        elif tipoActividad == "Cultural":
+            actividadNoche = actividades_culturales.pop()
+        elif tipoActividad == "Festiva":
+            actividadNoche = actividades_festivas.pop()
+
+
+        grafo.add(actividadManana, RDF.type, ECSDI.actividad)
+        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_manana, actividadManana)
+        grafo.add(actividadTarde, RDF.type, ECSDI.actividad)
+        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_tarde, actividadTarde)
+        grafo.add(actividadNoche, RDF.type, ECSDI.actividad)
+        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_noche, actividadNoche)
+
+        actividades = [actividadManana,actividadTarde,actividadNoche]
+
+        for activity in actividades:
+            localizacion = gr_actividades.value(subject=activity,predicate=ECSDI.se_encuentra_en)
+            latitud = gr_actividades.value(subject=localizacion, predicate=ECSDI.latitud)
+            longitud = gr_actividades.value(subject=localizacion, predicate=ECSDI.longitud)
+            periodo = gr_actividades.value(subject=activity,predicate=ECSDI.tiene_como_horario)
+            inicio = gr_actividades.value(subject=periodo, predicate=ECSDI.inicio)
+            fin = gr_actividades.value(subject=periodo, predicate=ECSDI.fin)
+            compania = gr_actividades.value(subject=activity, predicate=ECSDI.es_ofrecido_por)
+            nombre_compania = gr_actividades.value(subject=compania, predicate=ECSDI.nombre)
+
+            # Localizacion
+            grafo.add((localizacion, RDF.type, ECSDI.localizacion))
+            grafo.add((localizacion, ECSDI.longitud, Literal(longitud)))
+            grafo.add((localizacion, ECSDI.latitud, Literal(latitud)))
+
+            # Periodo
+            grafo.add((periodo, RDF.type, ECSDI.periodo))
+            grafo.add((periodo, ECSDI.inicio, Literal(inicio)))
+            grafo.add((periodo, ECSDI.fin, Literal(fin)))
+
+            # Compania
+            grafo.add((compania, RDF.type, ECSDI.compania))
+            grafo.add((compania, ECSDI.nombre, Literal(nombre_compania)))
+
+            # Actividad
+            grafo.add((activity, RDF.type, ECSDI.activiad))
+            grafo.add((activity, ECSDI.coste, Literal(coste)))
+            grafo.add((activity, ECSDI.se_encuentra_en, URIRef(localizacion)))
+            grafo.add((activity, ECSDI.tipo_de_actividad, Literal(tipoActividad)))
+            grafo.add((activity, ECSDI.tiene_como_horario, URIRef(periodo)))
+            grafo.add((activity, ECSDI.es_ofrecido_por, URIRef(compania)))
+
+
+    return grafo
+
+def randomPonderado(ponderacionLudica, ponderacionCultural, ponderacionFestiva):
+    suma_de_ponderaciones = ponderacionLudica + ponderacionCultural + ponderacionFestiva
+    randomized = random.randint(suma_de_ponderaciones)
+    result = None
+    if randomized <= ponderacionLudica:
+        result = "Ludica"
+    elif randomized > ponderacionLudica and randomized <= ponderacionLudica+ponderacionCultural:
+        result = "Cultural"
+    else:
+        result = "Festiva"
+    return result
 
 @app.route("/Stop")
 def stop():
