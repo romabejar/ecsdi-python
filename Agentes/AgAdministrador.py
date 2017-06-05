@@ -207,7 +207,7 @@ def resultado_plan_de_viaje():
     localizacionLlegadaT = ECSDI['localizacion' + str(get_count())]
     rpv.add((localizacionLlegadaT, RDF.type, ECSDI.localizacion))
     rpv.add((localizacionLlegadaT, ECSDI.direccion, Literal('LocalizacionLlegadaTIda')))
-    rpv.add((llegadaTransporte, ECSDI.se_encuentra_en, URIRef(localizacionSalidaT)))
+    rpv.add((llegadaTransporte, ECSDI.se_encuentra_en, URIRef(localizacionLlegadaT)))
 
     ciudadLlegadaT = ECSDI['ciudad' + str(get_count())]
     rpv.add((ciudadLlegadaT, RDF.type, ECSDI.ciudad))
@@ -267,9 +267,9 @@ def resultado_plan_de_viaje():
     rpv.add((transporteVuelta, ECSDI.llega_a, URIRef(llegadaTransporte)))
 
     localizacionLlegadaT = ECSDI['localizacion' + str(get_count())]
-    rpv.add((localizacionLlegadaT, RDF.type, ECSDI.localizacion_llegada_vuelta))
+    rpv.add((localizacionLlegadaT, RDF.type, ECSDI.localizacion))
     rpv.add((localizacionLlegadaT, ECSDI.direccion, Literal('LocalizacionLlegadaTVuelta')))
-    rpv.add((llegadaTransporte, ECSDI.se_encuentra_en, URIRef(localizacionSalidaT)))
+    rpv.add((llegadaTransporte, ECSDI.se_encuentra_en, URIRef(localizacionLlegadaT)))
 
     ciudadLlegadaT = ECSDI['ciudad' + str(get_count())]
     rpv.add((ciudadLlegadaT, RDF.type, ECSDI.ciudad))
@@ -420,51 +420,51 @@ def browser_cerca():
     pCultural = request.form.get('ponderacionCultural')
     pFestiva = request.form.get('ponderacionFestiva')
 
-    # if originCity:
-    #     cityOrg = ECSDI['ciudad' + str(get_count())]
-    #     gr.add((cityOrg, RDF.type, ECSDI.ciudad))
-    #     gr.add((cityOrg, ECSDI.nombre, Literal(originCity, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.tiene_como_origen, URIRef(cityOrg)))
-    #
-    # # TODO: Ralizar para todos los parametros
-    # if destinationCity:
-    #     cityDes = ECSDI['ciudad' + str(get_count())]
-    #     gr.add((cityDes, RDF.type, ECSDI.ciudad))
-    #     gr.add((cityDes, ECSDI.nombre, Literal(destinationCity, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.tiene_como_destino, URIRef(cityDes)))
-    #
-    # if initDate:
-    #     initD = ECSDI['inicioIda' + str(get_count())]
-    #     gr.add((initD, ECSDI.data_de_ida, Literal(initDate, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.data_de_ida, URIRef(initD)))
-    #
-    # if finDate:
-    #     finD = ECSDI['finVuelta' + str(get_count())]
-    #     gr.add((finD, ECSDI.data_de_vuelta, Literal(finD, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.data_de_vuelta, URIRef(finD)))
-    #
-    # if pLudica:
-    #     ponL = ECSDI['ponL'+ str(get_count())]
-    #     gr.add((ponL, ECSDI.ponderacion_de_actividades_ludicas, Literal(ponL, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.ponderacion_de_actividades_ludicas, URIRef(finD)))
-    #
-    # if pCultural:
-    #     ponC = ECSDI['ponC' + str(get_count())]
-    #     gr.add((ponC, ECSDI.ponderacion_de_actividades_culturales, Literal(ponC, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.ponderacion_de_actividades_culturales, URIRef(finD)))
-    #
-    # if pFestiva:
-    #     ponF = ECSDI['ponF' + str(get_count())]
-    #     gr.add((ponF, ECSDI.ponderacion_de_actividades_festivas, Literal(ponF, datatype=XSD.string)))
-    #     # Add restriccio to content
-    #     gr.add((contentResult, ECSDI.ponderacion_de_actividades_festivas, URIRef(finD)))
-    #
+    if originCity:
+        cityOrg = ECSDI['ciudad' + str(get_count())]
+        gr.add((cityOrg, RDF.type, ECSDI.ciudad))
+        gr.add((cityOrg, ECSDI.nombre, Literal(originCity, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.tiene_como_origen, URIRef(cityOrg)))
+
+    # TODO: Ralizar para todos los parametros
+    if destinationCity:
+        cityDes = ECSDI['ciudad' + str(get_count())]
+        gr.add((cityDes, RDF.type, ECSDI.ciudad))
+        gr.add((cityDes, ECSDI.nombre, Literal(destinationCity, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.tiene_como_destino, URIRef(cityDes)))
+
+    if initDate:
+        initD = ECSDI['inicioIda' + str(get_count())]
+        gr.add((initD, ECSDI.data_de_ida, Literal(initDate, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.data_de_ida, URIRef(initD)))
+
+    if finDate:
+        finD = ECSDI['finVuelta' + str(get_count())]
+        gr.add((finD, ECSDI.data_de_vuelta, Literal(finD, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.data_de_vuelta, URIRef(finD)))
+
+    if pLudica:
+        ponL = ECSDI['ponL'+ str(get_count())]
+        gr.add((ponL, ECSDI.ponderacion_de_actividades_ludicas, Literal(ponL, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_ludicas, URIRef(finD)))
+
+    if pCultural:
+        ponC = ECSDI['ponC' + str(get_count())]
+        gr.add((ponC, ECSDI.ponderacion_de_actividades_culturales, Literal(ponC, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_culturales, URIRef(finD)))
+
+    if pFestiva:
+        ponF = ECSDI['ponF' + str(get_count())]
+        gr.add((ponF, ECSDI.ponderacion_de_actividades_festivas, Literal(ponF, datatype=XSD.string)))
+        # Add restriccio to content
+        gr.add((contentResult, ECSDI.ponderacion_de_actividades_festivas, URIRef(finD)))
+
     # planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
     # gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
     #                       content=contentResult), planificador.address)
@@ -504,7 +504,6 @@ def browser_cerca():
             for localizacionUri in resp.objects(subject=alojUri, predicate=ECSDI.se_encuentra_en):
                 datos_alojamiento.append(resp.value(subject=localizacionUri, predicate=ECSDI.direccion))
 
-            # for locaUri in resp.subjects(RDF.type, ECSDI.localizacion_alojamiento):
                 for ciudadUri in resp.objects(subject=localizacionUri, predicate=ECSDI.pertenece_a):
                     datos_alojamiento.append(resp.value(subject=ciudadUri, predicate=ECSDI.nombre))
                     for paisUri in resp.objects(subject=ciudadUri, predicate=ECSDI.esta_en):
@@ -520,11 +519,13 @@ def browser_cerca():
     datos_transporte_ida = []
     for planUri in resp.subjects(RDF.type, ECSDI.plan_de_viaje):
         for transIdaUri in resp.objects(subject=planUri, predicate=ECSDI.como_transporte_de_ida):
-            datos_transporte_ida.append(resp.value(subject=transIdaUri, predicate=ECSDI.salida))
 
+            # Compania
             for companiaSIdaUri in resp.objects(subject=transIdaUri, predicate=ECSDI.es_ofrecido_por):
                 datos_transporte_ida.append(resp.value(subject=companiaSIdaUri, predicate=ECSDI.nombre))
 
+            # Salida
+            datos_transporte_ida.append(resp.value(subject=transIdaUri, predicate=ECSDI.salida))
             for aeroSIdaUri in resp.objects(subject=transIdaUri, predicate=ECSDI.sale_de):
                 datos_transporte_ida.append(resp.value(subject=aeroSIdaUri, predicate=ECSDI.nombre))
                 for locaSIdaUri in resp.objects(subject=aeroSIdaUri, predicate=ECSDI.se_encuentra_en):
@@ -534,17 +535,13 @@ def browser_cerca():
                         for paisSIdaUri in resp.objects(subject=ciudadSIdaUri, predicate=ECSDI.esta_en):
                             datos_transporte_ida.append(resp.value(subject=paisSIdaUri, predicate=ECSDI.nombre))
 
+            # Llegada
             datos_transporte_ida.append(resp.value(subject=transIdaUri, predicate=ECSDI.llegada))
-
-            # for companiaLIdaUri in resp.objects(subject=transIdaUri, predicate=ECSDI.es_ofrecido_por):
-            #     datos_transporte_ida.append(resp.value(subject=companiaLIdaUri, predicate=ECSDI.nombre))
-
             for aeroLIdaUri in resp.objects(subject=transIdaUri, predicate=ECSDI.llega_a):
                 datos_transporte_ida.append(resp.value(subject=aeroLIdaUri, predicate=ECSDI.nombre))
-                # for locaLIdaUri in resp.subjects(RDF.type, ECSDI.localizacion_llegada_ida):
-                for locaLIdaUri in resp.objects(subject=aeroLIdaUri, predicate=ECSDI.se_encuentra_en):
-                    datos_transporte_ida.append(resp.value(subject=locaLIdaUri, predicate=ECSDI.direccion))
-                    for ciudadLIdaUri in resp.objects(subject=locaLIdaUri, predicate=ECSDI.pertenece_a):
+                for locLIdaUri in resp.objects(subject=aeroLIdaUri, predicate=ECSDI.se_encuentra_en):
+                    datos_transporte_ida.append(resp.value(subject=locLIdaUri, predicate=ECSDI.direccion))
+                    for ciudadLIdaUri in resp.objects(subject=locLIdaUri, predicate=ECSDI.pertenece_a):
                         datos_transporte_ida.append(resp.value(subject=ciudadLIdaUri, predicate=ECSDI.nombre))
                         for paisLIdaUri in resp.objects(subject=ciudadLIdaUri, predicate=ECSDI.esta_en):
                             datos_transporte_ida.append(resp.value(subject=paisLIdaUri, predicate=ECSDI.nombre))
@@ -554,33 +551,32 @@ def browser_cerca():
     datos_transporte_vuelta = []
     for planUri in resp.subjects(RDF.type, ECSDI.plan_de_viaje):
         for transVueUri in resp.objects(subject=planUri, predicate=ECSDI.como_transporte_de_vuelta):
-            datos_transporte_vuelta.append(resp.value(subject=transVueUri, predicate=ECSDI.salida))
 
+            # Compania
             for companiaSIdaUri in resp.objects(subject=transVueUri, predicate=ECSDI.es_ofrecido_por):
                 datos_transporte_vuelta.append(resp.value(subject=companiaSIdaUri, predicate=ECSDI.nombre))
 
-            for aeroSIdaUri in resp.objects(subject=transVueUri, predicate=ECSDI.sale_de):
-                datos_transporte_vuelta.append(resp.value(subject=aeroSIdaUri, predicate=ECSDI.nombre))
-                for locaSIdaUri in resp.objects(subject=aeroSIdaUri, predicate=ECSDI.se_encuentra_en):
-                    datos_transporte_vuelta.append(resp.value(subject=locaSIdaUri, predicate=ECSDI.direccion))
-                    for ciudadSIdaUri in resp.objects(subject=locaSIdaUri, predicate=ECSDI.pertenece_a):
-                        datos_transporte_vuelta.append(resp.value(subject=ciudadSIdaUri, predicate=ECSDI.nombre))
-                        for paisSIdaUri in resp.objects(subject=ciudadSIdaUri, predicate=ECSDI.esta_en):
-                            datos_transporte_vuelta.append(resp.value(subject=paisSIdaUri, predicate=ECSDI.nombre))
+            # Salida
+            datos_transporte_vuelta.append(resp.value(subject=transVueUri, predicate=ECSDI.salida))
+            for aeroSVueUri in resp.objects(subject=transVueUri, predicate=ECSDI.sale_de):
+                datos_transporte_vuelta.append(resp.value(subject=aeroSVueUri, predicate=ECSDI.nombre))
+                for locaSVueUri in resp.objects(subject=aeroSVueUri, predicate=ECSDI.se_encuentra_en):
+                    datos_transporte_vuelta.append(resp.value(subject=locaSVueUri, predicate=ECSDI.direccion))
+                    for ciudadSVueUri in resp.objects(subject=locaSVueUri, predicate=ECSDI.pertenece_a):
+                        datos_transporte_vuelta.append(resp.value(subject=ciudadSVueUri, predicate=ECSDI.nombre))
+                        for paisSVueUri in resp.objects(subject=ciudadSVueUri, predicate=ECSDI.esta_en):
+                            datos_transporte_vuelta.append(resp.value(subject=paisSVueUri, predicate=ECSDI.nombre))
 
+            # Llegada
             datos_transporte_vuelta.append(resp.value(subject=transVueUri, predicate=ECSDI.llegada))
-
-            # for companiaLIdaUri in resp.objects(subject=transIdaUri, predicate=ECSDI.es_ofrecido_por):
-            #     datos_transporte_ida.append(resp.value(subject=companiaLIdaUri, predicate=ECSDI.nombre))
-
-            for aeroLIdaUri in resp.objects(subject=transVueUri, predicate=ECSDI.llega_a):
-                datos_transporte_vuelta.append(resp.value(subject=aeroLIdaUri, predicate=ECSDI.nombre))
-                for locaLIdaUri in resp.subjects(RDF.type, ECSDI.localizacion_llegada_vuelta):
-                    datos_transporte_vuelta.append(resp.value(subject=locaLIdaUri, predicate=ECSDI.direccion))
-                    for ciudadLIdaUri in resp.objects(subject=locaLIdaUri, predicate=ECSDI.pertenece_a):
-                        datos_transporte_vuelta.append(resp.value(subject=ciudadLIdaUri, predicate=ECSDI.nombre))
-                        for paisLIdaUri in resp.objects(subject=ciudadLIdaUri, predicate=ECSDI.esta_en):
-                            datos_transporte_vuelta.append(resp.value(subject=paisLIdaUri, predicate=ECSDI.nombre))
+            for aeroLVueUri in resp.objects(subject=transVueUri, predicate=ECSDI.llega_a):
+                datos_transporte_vuelta.append(resp.value(subject=aeroLVueUri, predicate=ECSDI.nombre))
+                for locaLVueUri in resp.objects(subject=aeroLVueUri, predicate=ECSDI.se_encuentra_en):
+                    datos_transporte_vuelta.append(resp.value(subject=locaLVueUri, predicate=ECSDI.direccion))
+                    for ciudadLVueUri in resp.objects(subject=locaLVueUri, predicate=ECSDI.pertenece_a):
+                        datos_transporte_vuelta.append(resp.value(subject=ciudadLVueUri, predicate=ECSDI.nombre))
+                        for paisLVueUri in resp.objects(subject=ciudadLVueUri, predicate=ECSDI.esta_en):
+                            datos_transporte_vuelta.append(resp.value(subject=paisLVueUri, predicate=ECSDI.nombre))
 
             datos_transporte_vuelta.append(resp.value(subject=transVueUri, predicate=ECSDI.coste))
 
@@ -591,8 +587,6 @@ def browser_cerca():
         # Actividades de manana
         actividades_manana = []
         actividades_manana.append(resp.value(subject=planDiaUri, predicate=ECSDI.data))
-
-        # for actividadMUri in resp.subjects(RDF.type, ECSDI.actividad):
 
         for actividadMananaUri in resp.objects(subject=planDiaUri, predicate=ECSDI.tiene_como_actividades_de_manana):
 
@@ -618,7 +612,6 @@ def browser_cerca():
         actividades_tarde = []
         actividades_tarde.append(resp.value(subject=planDiaUri, predicate=ECSDI.data))
 
-        # for actividadTardeUri in resp.subjects(RDF.type, ECSDI.actividad_tarde):
         for actividadTardeUri in resp.objects(subject=planDiaUri, predicate=ECSDI.tiene_como_actividades_de_tarde):
 
             for periodActTardeUri in resp.objects(subject=actividadTardeUri, predicate=ECSDI.tiene_como_horario):
@@ -643,7 +636,6 @@ def browser_cerca():
         actividades_noche = []
         actividades_noche.append(resp.value(subject=planDiaUri, predicate=ECSDI.data))
 
-        # for actividadNocheUri in resp.subjects(RDF.type, ECSDI.actividad_noche):
         for actividadNocheUri in resp.objects(subject=planDiaUri, predicate=ECSDI.tiene_como_actividades_de_noche):
 
             for periodActNocheUri in resp.objects(subject=actividadNocheUri, predicate=ECSDI.tiene_como_horario):
@@ -664,9 +656,6 @@ def browser_cerca():
 
         datos_plan_dia.append(actividades_noche)
 
-    logger.info("\n __________________ \n")
-    logger.info(datos_plan_dia)
-    logger.info("\n __________________ \n")
     return render_template('activities.html', identificador=identificador, datos_alojamiento=datos_alojamiento,
                            datos_transporte_ida=datos_transporte_ida, datos_transporte_vuelta=datos_transporte_vuelta,
                            datos_plan_dia=datos_plan_dia)
