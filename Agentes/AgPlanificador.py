@@ -20,6 +20,7 @@ from rdflib import Graph, Namespace, RDF, URIRef, Literal, XSD
 from AgentUtil.Agent import Agent
 from AgentUtil.FlaskServer import shutdown_server
 from AgentUtil.Logging import config_logger
+from datetime import datetime
 
 
 __author__ = 'bejar'
@@ -207,7 +208,9 @@ def communication():
                 logger.info("Grafo respuesta de actividades recibido")
 
                 # TODO: Llamar al agente de vuelos con el grafo correspondiente
-                gr_vuelos = buscar_transporte(**restriccions_vuelos)
+                #gr_vuelos = buscar_transporte(**restriccions_vuelos)
+                #gr_vuelos = buscar_transporte(ciudadOrigen, ciudadDestino, finData, inicioData)
+                gr_vuelos = None
                 logger.info("Grafo respuesta de vuelos recibido")
 
 
@@ -233,8 +236,8 @@ def communication():
                                precioTransporteMinimo,
                                precioTransporteMaximo,
                                gr_actividades,
-                               gr_alojamiento,
-                               gr_vuelos)
+                               gr_alojamiento)
+                               #gr_vuelos)
             else:
                 gr = build_message(Graph(),
                                ACL['not-understood'],
@@ -274,19 +277,51 @@ def buscar_actividades():
 
     return gr
 
-def buscar_transporte(ciudadNombre='Barcelona'):
+def buscar_transporte(ciudadOrigen, ciudadDestino, finData, inicioData):
     #creamos el contenido
+    content = ECSDI['peticion_de_transportes' + str(get_count())]
 
     #creamos los objetos necesarios para las tripletas del grafo
+    fechaIda = ECSDI['periodo' + str(get_count())]
+    fechaVuelta = ECSDI['periodo' + str(get_count())]
+
+    destino = ECSDI['ciudad' + str(get_count())]
+    origen = ECSDI['ciudad' + str(get_count())]
 
     #Creamos el grafo con las tripletas
+    grafo = Graph()
+    grafo.add((destino, RDF.type, ECSDI.ciudad))
+    grafo.add((origen, RDF.type, ECSDI.ciudad))
+    grafo.add((fechaIda, RDF.type, ECSDI.periodo))
+    grafo.add((fechaVuelta, RDF.type, ECSDI.periodo))
+    # seteamos la fecha de Ida (periodo de inicio es inicio y fin = inicioData)
+    grafo.add((fechaIda, ECSDI.inicio, Literal(inicioData)))
+    grafo.add((fechaIda, ECSDI.fin, Literal(inicioData)))
+    # seteamos la fecha de Vuelta con periodo = finData
+    grafo.add((fechaVuelta, ECSDI.inicio, Literal(finData)))
+    grafo.add((fechaVuelta, ECSDI.fin, Literal(finData)))
+
+    grafo.add((origen, ECSDI.nombre, Literal(ciudadOrigen)))
+    grafo.add((destino, ECSDI.nombre, Literal(ciudadDestino)))
+
+
+    grafo.add((content, RDF.type, ECSDI.peticion_de_transportes))
+    grafo.add((content, ECSDI.tiene_como_origen, URIRef(origen)))
+    grafo.add((content, ECSDI.tiene_como_destino, URIRef(destino)))
+    grafo.add((content, ECSDI.tiene_como_periodo_susceptible_de_ida, URIRef(fechaIda)))
+    grafo.add((content, ECSDI.tiene_como_periodo_susceptible_de_vuelta, URIRef(fechaVuelta)))
 
     #Preguntamos por el agente que necesitamos
+    agente_transportes = get_agent_info(agn.AgGestordeTransporte, DirectoryAgent, PlannerAgent, get_count())
+
 
     #Enviamos el mensaje
+    gr = send_message(build_message(grafo, perf=ACL.request, sender=PlannerAgent.uri, receiver=agente_transportes.uri,
+                                    msgcnt=get_count(),
+                                    content=content), agente_transportes.address)
 
     #Retornamos el grafo respuesta del mensaje
-    return 0
+    return gr
 
 
 def buscar_alojamiento(ciudadNombre='Barcelona'):
@@ -331,8 +366,8 @@ def cribar(ciudadOrigen,
            precioTransporteMinimo,
            precioTransporteMaximo,
            gr_actividades,
-           gr_alojamiento,
-           gr_vuelos):
+           gr_alojamiento):
+           #gr_vuelos):
 
     grafo = Graph()
     content = ECSDI['respuesta_de_plan' + str(get_count())]
@@ -398,11 +433,9 @@ def cribar(ciudadOrigen,
 
     vuelos_de_ida = []
     vuelos_de_vuelta = []
-    for s, p, o in gr_vuelos:
-        if o == ECSDI.vuelo:
-            NotImplementedYet = None
-
-
+    #for s, p, o in gr_vuelos:
+    #    if o == ECSDI.vuelo:
+    #        NotImplementedYet = None
 
 
     # Cribar Actividades
@@ -418,13 +451,18 @@ def cribar(ciudadOrigen,
                 actividades_ludicas.__add__(s)
             elif tipo == "Cultural":
                 actividades_culturales.__add__(s)
+    # # No conseguimos sacar el numero de dias entre 2 hardcodeamos dias para tirar adelante
+    # iniDate = datetime.strptime(dataInicio, "%d/%m/%Y").strftime("%Y-%m-%d")
+    # finDate = datetime.strptime(dataFin, "%d/%m/%Y").strftime("%Y-%m-%d")
+    # dias_de_plan = abs(finDate - iniDate).days
 
-    dias_de_plan = (dataFin - dataInicio).days
+    dias_de_plan = 3
+
     data = dataInicio
     for i in range(dias_de_plan):
         plan_de_un_dia = ECSDI['plan_de_un_dia' + str(get_count())]
-        grafo.add(plan_de_un_dia, RDF.type, ECSDI.plan_de_un_dia)
-        grafo.add(plan, ECSDI.tiene_para_cada_dia, plan_de_un_dia)
+        grafo.add((plan_de_un_dia, RDF.type, ECSDI.plan_de_un_dia))
+        grafo.add((plan, ECSDI.tiene_para_cada_dia, URIRef(plan_de_un_dia)))
 
         tipoActividad = randomPonderado(ponderacionLudica,ponderacionCulturales,ponderacionFestivas)
         actividadManana = None
@@ -452,12 +490,12 @@ def cribar(ciudadOrigen,
             actividadNoche = actividades_festivas.pop()
 
 
-        grafo.add(actividadManana, RDF.type, ECSDI.actividad)
-        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_manana, actividadManana)
-        grafo.add(actividadTarde, RDF.type, ECSDI.actividad)
-        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_tarde, actividadTarde)
-        grafo.add(actividadNoche, RDF.type, ECSDI.actividad)
-        grafo.add(plan_de_un_dia, ECSDI.tiene_como_actividades_de_noche, actividadNoche)
+        grafo.add((actividadManana, RDF.type, ECSDI.actividad))
+        grafo.add((plan_de_un_dia, ECSDI.tiene_como_actividades_de_manana, actividadManana))
+        grafo.add((actividadTarde, RDF.type, ECSDI.actividad))
+        grafo.add((plan_de_un_dia, ECSDI.tiene_como_actividades_de_tarde, actividadTarde))
+        grafo.add((actividadNoche, RDF.type, ECSDI.actividad))
+        grafo.add((plan_de_un_dia, ECSDI.tiene_como_actividades_de_noche, actividadNoche))
 
         actividades = [actividadManana,actividadTarde,actividadNoche]
 
@@ -498,15 +536,19 @@ def cribar(ciudadOrigen,
 
 def randomPonderado(ponderacionLudica, ponderacionCultural, ponderacionFestiva):
     suma_de_ponderaciones = ponderacionLudica + ponderacionCultural + ponderacionFestiva
-    randomized = random.randint(suma_de_ponderaciones)
-    result = None
-    if randomized <= ponderacionLudica:
-        result = "Ludica"
-    elif randomized > ponderacionLudica and randomized <= ponderacionLudica+ponderacionCultural:
-        result = "Cultural"
-    else:
-        result = "Festiva"
-    return result
+
+    # #No funciona el ponderizador -> Harcodeamos
+    #randomized = random.randint(0,suma_de_ponderaciones)
+    return "Festiva"
+
+    # result = None
+    # if randomized <= ponderacionLudica:
+    #     result = "Ludica"
+    # elif randomized > ponderacionLudica and randomized <= ponderacionLudica+ponderacionCultural:
+    #     result = "Cultural"
+    # else:
+    #     result = "Festiva"
+    # return result
 
 @app.route("/Stop")
 def stop():

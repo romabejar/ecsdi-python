@@ -270,138 +270,138 @@ ns1:activity10 a ns1:activiad ;
     ns1:es_ofrecido_por ns1:company13 ;
     ns1:se_encuentra_en ns1:location11 ;
     ns1:tiene_como_horario ns1:period12 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity14 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company17 ;
     ns1:se_encuentra_en ns1:location15 ;
     ns1:tiene_como_horario ns1:period16 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity18 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company21 ;
     ns1:se_encuentra_en ns1:location19 ;
     ns1:tiene_como_horario ns1:period20 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity2 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company5 ;
     ns1:se_encuentra_en ns1:location3 ;
     ns1:tiene_como_horario ns1:period4 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity22 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company25 ;
     ns1:se_encuentra_en ns1:location23 ;
     ns1:tiene_como_horario ns1:period24 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity26 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company29 ;
     ns1:se_encuentra_en ns1:location27 ;
     ns1:tiene_como_horario ns1:period28 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity30 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company33 ;
     ns1:se_encuentra_en ns1:location31 ;
     ns1:tiene_como_horario ns1:period32 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity34 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company37 ;
     ns1:se_encuentra_en ns1:location35 ;
     ns1:tiene_como_horario ns1:period36 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity38 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company41 ;
     ns1:se_encuentra_en ns1:location39 ;
     ns1:tiene_como_horario ns1:period40 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity42 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company45 ;
     ns1:se_encuentra_en ns1:location43 ;
     ns1:tiene_como_horario ns1:period44 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity46 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company49 ;
     ns1:se_encuentra_en ns1:location47 ;
     ns1:tiene_como_horario ns1:period48 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity50 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company53 ;
     ns1:se_encuentra_en ns1:location51 ;
     ns1:tiene_como_horario ns1:period52 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity54 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company57 ;
     ns1:se_encuentra_en ns1:location55 ;
     ns1:tiene_como_horario ns1:period56 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity58 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company61 ;
     ns1:se_encuentra_en ns1:location59 ;
     ns1:tiene_como_horario ns1:period60 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity6 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company9 ;
     ns1:se_encuentra_en ns1:location7 ;
     ns1:tiene_como_horario ns1:period8 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity62 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company65 ;
     ns1:se_encuentra_en ns1:location63 ;
     ns1:tiene_como_horario ns1:period64 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity66 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company69 ;
     ns1:se_encuentra_en ns1:location67 ;
     ns1:tiene_como_horario ns1:period68 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity70 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company73 ;
     ns1:se_encuentra_en ns1:location71 ;
     ns1:tiene_como_horario ns1:period72 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity74 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company77 ;
     ns1:se_encuentra_en ns1:location75 ;
     ns1:tiene_como_horario ns1:period76 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 
 ns1:activity78 a ns1:activiad ;
     ns1:coste "15" ;
     ns1:es_ofrecido_por ns1:company81 ;
     ns1:se_encuentra_en ns1:location79 ;
     ns1:tiene_como_horario ns1:period80 ;
-    ns1:tipo_de_actividad "Fiesta" .
+    ns1:tipo_de_actividad "Festiva" .
 

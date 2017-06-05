@@ -465,9 +465,9 @@ def browser_cerca():
         # Add restriccio to content
         gr.add((contentResult, ECSDI.ponderacion_de_actividades_festivas, URIRef(finD)))
 
-    # planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
-    # gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
-    #                       content=contentResult), planificador.address)
+    planificador = get_agent_info(agn.PlannerAgent, DirectoryAgent, AdministrativeAgent,get_count())
+    gresp = send_message(build_message(gr, perf=ACL.request, sender=AdministrativeAgent.uri, receiver=planificador.uri, msgcnt=get_count(),
+                           content=contentResult), planificador.address)
 
     originCity = request.form.get('originCity')
     destinationCity = request.form.get('destinationCity')
@@ -489,6 +489,8 @@ def browser_cerca():
     # Obtenemos los datos del plan de viaje
 
     resp = resultado_plan_de_viaje()
+    #resp = gresp
+
     identificador = []
     datos_alojamiento = []
 

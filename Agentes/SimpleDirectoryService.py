@@ -140,12 +140,12 @@ def register():
 
         logger.info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
         logger.info("rsearch.next()[0]:")
-        logger.info(rsearch.next()[0])
+        #logger.info(rsearch.next()[0])
         logger.info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
 
         if rsearch is not None:
-            if rsearch.next()[0] is not None:
-                agn_uri = rsearch.next()[0]
+            #if rsearch.next()[0] is not None:
+            agn_uri = rsearch.next()[0]
             agn_add = dsgraph.value(subject=agn_uri, predicate=DSO.Address)
             agn_name = dsgraph.value(subject=agn_uri, predicate=FOAF.name)
             gr = Graph()

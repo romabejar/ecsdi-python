@@ -183,6 +183,7 @@ def communication():
                     content = ECSDI['respuesta_de_actividades' + str(get_count())]
                     data_dict = json.loads(json_data)
                     index = 0
+                    tipo_actividad = ["Festiva","Cultural","Ludica"]
                     for place in data_dict:
                         index += 1
                         print place
@@ -213,7 +214,7 @@ def communication():
                         gr.add((act_obj, RDF.type, ECSDI.activiad))
                         gr.add((act_obj, ECSDI.coste, Literal("15")))
                         gr.add((act_obj, ECSDI.se_encuentra_en, loc_obj))
-                        gr.add((act_obj, ECSDI.tipo_de_actividad, Literal("Fiesta")))
+                        gr.add((act_obj, ECSDI.tipo_de_actividad, Literal("Festiva")))
                         gr.add((act_obj, ECSDI.tiene_como_horario, URIRef(periodo)))
                         gr.add((act_obj, ECSDI.es_ofrecido_por, URIRef(compania)))
                         gr.add((content, ECSDI.se_construye_de_actividades, URIRef(act_obj)))
